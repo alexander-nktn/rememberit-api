@@ -4,7 +4,6 @@ import com.boost.memory.types.card.dto.CardGenerateDTO;
 import com.boost.memory.exception.ServiceMethodContext;
 import com.boost.memory.models.Card;
 import com.boost.memory.services.CardService;
-import com.boost.memory.types.card.service.CardCreateOptions;
 import com.boost.memory.types.card.service.CardGenerateOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
