@@ -4,7 +4,7 @@ import java.awt.*;
 
 public class CardGenerateDTO {
     public String[] texts;
-    public String sourceLanguage;
+    public String spreadsheetUrl;    public String sourceLanguage;
     public String targetLanguage;
     public Color backgroundColor;
     public Color textColor;

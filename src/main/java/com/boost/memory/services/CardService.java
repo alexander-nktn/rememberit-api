@@ -98,18 +98,23 @@ public class CardService {
             ctx.addProperty("cardGenerateDTO", cardGenerateOptions);
             ArrayList<Card> cards = new ArrayList<>();
 
-            String spreadsheetId = "1GgN4Mf4Mi3vnB3vtL0zDAoyqkZUw9lohgkX7x2u2TsQ";
-            String range = "'Saved translations'!A1:A";
-            try {
-                List<List<Object>> values = this.wordCollectionService.getSpreadsheetValues(spreadsheetId, range);
+            String spreadsheetId;
 
-                System.out.println(values);
+            if (!cardGenerateOptions.spreadsheetUrl.isEmpty()) {
+                spreadsheetId = this.getIdFromUrl(cardGenerateOptions.spreadsheetUrl);
 
-                cardGenerateOptions.texts = values.stream()
-                        .map(row -> row.get(0).toString())
-                        .toArray(String[]::new);
-            } catch (Exception error) {
-                throw new RuntimeException("Failed to get spreadsheet values", error);
+                String range = "'Saved translations'!A1:A";
+                try {
+                    List<List<Object>> values = this.wordCollectionService.getSpreadsheetValues(spreadsheetId, range);
+
+                    System.out.println(values);
+
+                    cardGenerateOptions.texts = values.stream()
+                            .map(row -> row.get(0).toString())
+                            .toArray(String[]::new);
+                } catch (Exception error) {
+                    throw new RuntimeException("Failed to get spreadsheet values", error);
+                }
             }
 
             try {
@@ -144,5 +149,16 @@ public class CardService {
             } catch (Exception error) {
                 throw new RuntimeException("Failed to generate cards", error);
             }
+        }
+
+        private String getIdFromUrl(String url) {
+            String[] parts = url.split("/");
+            String id = parts[parts.length - 2];
+
+            if (id.isEmpty()) {
+                throw new RuntimeException("Failed to get spreadsheet ID from URL");
+            }
+
+            return id;
         }
 }
