@@ -1,6 +1,7 @@
 package com.boost.memory.services;
 import com.boost.memory.exception.ServiceMethodContext;
 import com.boost.memory.models.Card;
+import com.boost.memory.models.Translation;
 import com.boost.memory.repositories.CardRepository;
 import com.boost.memory.types.card.service.CardCreateOptions;
 import com.boost.memory.types.card.service.CardGenerateOptions;
@@ -19,11 +20,18 @@ import java.util.Optional;
 public class CardService {
     private static final Logger logger = LoggerFactory.getLogger(CardService.class);
     private final TranslationService translationService;
+    private final ImageService imageService;
+    private final WordCollectionService wordCollectionService;
+
 
     public CardService(
-            TranslationService translationService
+            TranslationService translationService,
+            ImageService imageService,
+            WordCollectionService wordCollectionService
     ) {
         this.translationService = translationService;
+        this.imageService = imageService;
+        this.wordCollectionService = wordCollectionService;
     }
 
     @Autowired
@@ -86,26 +94,55 @@ public class CardService {
         }
     }
 
-    public ArrayList<Card> generate(CardGenerateOptions cardGenerateOptions, ServiceMethodContext ctx) {
-        ctx.addProperty("cardGenerateDTO", cardGenerateOptions);
-        String language = cardGenerateOptions.language;
-        ArrayList<Card> cards = new ArrayList<>();
+        public ArrayList<Card> generate(CardGenerateOptions cardGenerateOptions, ServiceMethodContext ctx) {
+            ctx.addProperty("cardGenerateDTO", cardGenerateOptions);
+            ArrayList<Card> cards = new ArrayList<>();
 
-        try {
-              for (String word : cardGenerateOptions.words) {
-                  CardCreateOptions cardCreateOptions = new CardCreateOptions(ctx.user);
+            String spreadsheetId = "1GgN4Mf4Mi3vnB3vtL0zDAoyqkZUw9lohgkX7x2u2TsQ";
+            String range = "'Saved translations'!A1:A";
+            try {
+                List<List<Object>> values = this.wordCollectionService.getSpreadsheetValues(spreadsheetId, range);
 
-                  cardCreateOptions.translation = this.translationService
-                          .translateAndSave(new TranslationTranslateOptions(word, language), ctx);
+                System.out.println(values);
 
-                  cardCreateOptions.imageUrl = "imageUrl";
+                cardGenerateOptions.texts = values.stream()
+                        .map(row -> row.get(0).toString())
+                        .toArray(String[]::new);
+            } catch (Exception error) {
+                throw new RuntimeException("Failed to get spreadsheet values", error);
+            }
 
-                  cards.add(this.create(cardCreateOptions, ctx));
-                }
+            try {
+                  for (String text : cardGenerateOptions.texts) {
+                      CardCreateOptions cardCreateOptions = new CardCreateOptions(ctx.user);
 
-                return cards;
-        } catch (Exception error) {
-            throw new RuntimeException("Failed to generate cards", error);
+                      Translation translation = this.translationService.translateAndSave(
+                              new TranslationTranslateOptions(
+                                      text,
+                                      cardGenerateOptions.sourceLanguage,
+                                      cardGenerateOptions.targetLanguage
+                              ), ctx);
+
+                      // implement when AI is ready
+//                      cardCreateOptions.imageUrl = this.imageService.generate(cardCreateOptions.translation.translatedWord, ctx).block();
+
+                      this.imageService.generateWithBackground(
+                                translation.text,
+                                translation.translatedText,
+                                cardGenerateOptions.backgroundColor,
+                                cardGenerateOptions.textColor,
+                                cardGenerateOptions.translatedTextColor,
+                                ctx
+                      );
+
+                        cardCreateOptions.translation = translation;
+
+                      cards.add(this.create(cardCreateOptions, ctx));
+                    }
+
+                    return cards;
+            } catch (Exception error) {
+                throw new RuntimeException("Failed to generate cards", error);
+            }
         }
-    }
 }

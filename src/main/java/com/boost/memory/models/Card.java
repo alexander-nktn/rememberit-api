@@ -22,8 +22,17 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.UUID)
     public String id;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     public String imageUrl;
+
+    @Column(nullable = true)
+    public String backgroundColor;
+
+    @Column(nullable = true)
+    public String textColor;
+
+    @Column(nullable = true)
+    public String translatedTextColor;
 
     @CreatedDate()
     public Date createdAt;

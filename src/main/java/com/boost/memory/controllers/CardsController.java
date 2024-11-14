@@ -53,7 +53,14 @@ public class CardsController {
         ServiceMethodContext ctx = new ServiceMethodContext();
 
         return cardService.generate(
-                new CardGenerateOptions(cardGenerateDTO.words, cardGenerateDTO.language),
+                new CardGenerateOptions(
+                        cardGenerateDTO.texts,
+                        cardGenerateDTO.sourceLanguage,
+                        cardGenerateDTO.targetLanguage,
+                        cardGenerateDTO.backgroundColor,
+                        cardGenerateDTO.textColor,
+                        cardGenerateDTO.translatedTextColor
+                ),
                 ctx
         );
     }

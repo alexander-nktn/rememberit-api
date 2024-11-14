@@ -1,19 +1,23 @@
 package com.boost.memory.types.translation;
 
 public class TranslationCreateOptions {
-    public String mainWord;
+    public String text;
 
-    public String translatedWord;
+    public String translatedText;
 
-    public String language;
+    public String sourceLanguage;
+
+    public String targetLanguage;
 
     public TranslationCreateOptions(
-            String mainWord,
-            String translatedWord,
-            String language
+            String text,
+            String translatedText,
+            String sourceLanguage,
+            String targetLanguage
     ) {
-        this.mainWord = mainWord;
-        this.translatedWord = translatedWord;
-        this.language = language;
+        this.text = text;
+        this.translatedText = translatedText;
+        this.sourceLanguage = sourceLanguage;
+        this.targetLanguage = targetLanguage;
     }
 }

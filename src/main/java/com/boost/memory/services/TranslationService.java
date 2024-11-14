@@ -36,13 +36,11 @@ public class TranslationService {
     }
 
     private String translate(TranslationTranslateOptions opts, ServiceMethodContext ctx) {
-        String mainWord = opts.Word;
-        String language = opts.Language;
-
         try {
             com.google.cloud.translate.Translation translation = translate.translate(
-                    mainWord,
-                    Translate.TranslateOption.targetLanguage(language),
+                    opts.text,
+                    Translate.TranslateOption.targetLanguage(opts.targetLanguage),
+                    Translate.TranslateOption.sourceLanguage(opts.sourceLanguage),
                     Translate.TranslateOption.model("base"));
             return translation.getTranslatedText();
         } catch (Exception error) {
@@ -51,8 +49,13 @@ public class TranslationService {
     }
 
     public Translation translateAndSave(TranslationTranslateOptions opts, ServiceMethodContext ctx) {
-        String translatedWord = this.translate(opts, ctx);
-        TranslationCreateOptions translationCreateOptions = new TranslationCreateOptions(translatedWord, opts.Word, opts.Language);
+        String translatedText = this.translate(opts, ctx);
+        TranslationCreateOptions translationCreateOptions = new TranslationCreateOptions(
+                opts.text,
+                translatedText,
+                opts.sourceLanguage,
+                opts.targetLanguage
+        );
 
         return this.create(translationCreateOptions, ctx);
     }
