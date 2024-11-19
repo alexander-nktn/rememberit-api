@@ -1,0 +1,50 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+"Indicates an Input Object is a OneOf Input Object."
+directive @oneOf on INPUT_OBJECT
+
+type Card {
+    id: ID!
+    sourceLanguage: String
+    targetLanguage: String
+    texts: [String!]!
+    translation: Translation
+    user: User
+}
+
+type Mutation {
+    deleteCard(id: ID!): Boolean
+    generateCards(input: GenerateCardsInput!): [Card!]!
+}
+
+type Query {
+    getCardById(id: ID!): Card
+    getCards: [Card!]!
+}
+
+type Translation {
+    sourceLanguage: String
+    targetLanguage: String
+    text: String
+    translatedText: String
+}
+
+type User {
+    email: String
+    firstName: String
+    id: ID!
+    lastName: String
+}
+
+input GenerateCardsInput {
+    backgroundColor: String
+    sourceLanguage: String
+    spreadsheetUrl: String
+    targetLanguage: String
+    textColor: String
+    texts: [String!]!
+    translatedTextColor: String
+}
