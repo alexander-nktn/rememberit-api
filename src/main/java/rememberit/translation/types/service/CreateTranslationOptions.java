@@ -1,4 +1,4 @@
-package rememberit.translation;
+package rememberit.translation.types.service;
 
 public class CreateTranslationOptions {
     public String text;

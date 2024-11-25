@@ -1,4 +1,5 @@
 package rememberit.translation;
+import jakarta.persistence.EntityNotFoundException;
 import rememberit.exception.ServiceMethodContext;
 import com.google.cloud.translate.Translate;
 import org.slf4j.Logger;
@@ -6,6 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.google.cloud.translate.TranslateOptions;
+import rememberit.translation.types.service.CreateTranslationOptions;
+import rememberit.translation.types.service.TranslateTranslationOptions;
+import rememberit.translation.types.service.UpdateTranslationOptions;
+
+import java.util.Optional;
 
 
 @Service
@@ -21,6 +27,21 @@ public class TranslationService {
     @Autowired
     private TranslationRepository translationRepository;
 
+    public Optional<Translation> getOne(String id) {
+        return translationRepository.findById(id);
+    }
+
+    public Translation getOneOrFail(String id, ServiceMethodContext ctx) {
+        ctx.addProperty("id", id);
+        Optional<Translation> translation  = this.getOne(id);
+
+        if (translation.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Card with id: %s not found", id));
+        }
+
+        return translation.get();
+    }
+
     private Translation create(CreateTranslationOptions opts, ServiceMethodContext ctx) {
         Translation card = new Translation(
                 opts.text,
@@ -33,6 +54,18 @@ public class TranslationService {
             return translationRepository.save(card);
         } catch (Exception error) {
             throw new RuntimeException("Failed to create translation", error);
+        }
+    }
+
+    public Translation update(UpdateTranslationOptions opts, ServiceMethodContext ctx) {
+        Translation translation = this.getOneOrFail(opts.id, ctx);
+        translation.setText(opts.text);
+        translation.setTranslatedText(opts.translatedText);
+
+        try {
+            return translationRepository.save(translation);
+        } catch (Exception error) {
+            throw new RuntimeException("Failed to update translation", error);
         }
     }
 

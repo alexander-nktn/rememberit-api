@@ -7,7 +7,7 @@ import rememberit.textCollector.TextCollectorService;
 import rememberit.card.types.service.CreateCardOptions;
 import rememberit.card.types.service.GenerateCardsOptions;
 import rememberit.card.types.service.UpdateCardOptions;
-import rememberit.translation.TranslateTranslationOptions;
+import rememberit.translation.types.service.TranslateTranslationOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,10 +70,6 @@ public class CardService {
                 opts.user
         );
 
-        System.out.println(121212);
-        System.out.println(card.translation.text);
-
-
         try {
             return cardRepository.save(card);
         } catch (Exception error) {
@@ -81,7 +77,7 @@ public class CardService {
         }
     }
 
-    private Card update(UpdateCardOptions cardUpdateOptions, ServiceMethodContext ctx) {
+    public Card update(UpdateCardOptions cardUpdateOptions, ServiceMethodContext ctx) {
         ctx.addProperty("cardUpdateDTO", cardUpdateOptions);
         Card card = getOneOrFail(cardUpdateOptions.id, ctx);
 

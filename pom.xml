@@ -60,6 +60,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>io.github.graphql-java</groupId>
+			<artifactId>graphql-java-annotations</artifactId>
+			<version>21.5</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>42.7.4</version>
@@ -127,6 +133,10 @@
 			<id>googleapis</id>
 			<name>Google APIs</name>
 			<url>https://maven.googleapis.com/maven2</url>
+		</repository>
+		<repository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
 		</repository>
 	</repositories>
 
