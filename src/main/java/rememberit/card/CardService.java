@@ -78,8 +78,13 @@ public class CardService {
     }
 
     public Card update(UpdateCardOptions cardUpdateOptions, ServiceMethodContext ctx) {
-        ctx.addProperty("cardUpdateDTO", cardUpdateOptions);
+        ctx.addProperty("cardUpdateOptions", cardUpdateOptions);
         Card card = getOneOrFail(cardUpdateOptions.id, ctx);
+
+        card.setBackgroundColor(cardUpdateOptions.backgroundColor);
+        card.setTextColor(cardUpdateOptions.textColor);
+        card.setTranslatedTextColor(cardUpdateOptions.translatedTextColor);
+        card.setImageUrl(cardUpdateOptions.imageUrl);
 
         try {
             return cardRepository.save(card);

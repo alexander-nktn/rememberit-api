@@ -18,7 +18,7 @@ type Card {
 }
 
 type Mutation {
-    deleteCard(id: ID!): Boolean
+    deleteCard(id: ID!): String
     generateCards(input: GenerateCardsInput!): [Card!]!
     updateCard(input: UpdateCardInput!): Card
 }

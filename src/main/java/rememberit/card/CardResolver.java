@@ -50,12 +50,7 @@ import java.util.List;
     public Card updateCard(@Argument UpdateCardInput input) {
         ServiceMethodContext ctx = new ServiceMethodContext();
 
-        System.out.println(5555);
-        System.out.println(input.translation);
-
         if (input.translation != null) {
-            System.out.println(6666);
-            System.out.println(input.translation.id);
             translationService.update(
                     new UpdateTranslationOptions.Builder(input.translation.id)
                             .text(input.translation.text)
@@ -74,10 +69,10 @@ import java.util.List;
     }
 
     @MutationMapping
-    public boolean deleteCard(@Argument String id) {
+    public String deleteCard(@Argument String id) {
         ServiceMethodContext ctx = new ServiceMethodContext();
         cardService.delete(id, ctx);
-        return true;
+        return id;
     }
 
     @MutationMapping
