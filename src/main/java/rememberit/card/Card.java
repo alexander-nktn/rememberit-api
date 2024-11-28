@@ -47,6 +47,11 @@ public class Card {
     @Temporal(TemporalType.TIMESTAMP)
     public Date createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
+
     @OneToOne
     @JoinColumn(name = "translation_id", nullable = false)
     public Translation translation;

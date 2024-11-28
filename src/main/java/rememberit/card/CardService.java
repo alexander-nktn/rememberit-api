@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +41,11 @@ public class CardService {
     private CardRepository cardRepository;
 
     public List<Card> getMany() {
-        return cardRepository.findAll();
+        List<Card> cards = cardRepository.findAll();
+
+        cards.sort(Comparator.comparing(Card::getCreatedAt).reversed());
+
+        return cards;
     }
 
     public Optional<Card> getOne(String id) {
