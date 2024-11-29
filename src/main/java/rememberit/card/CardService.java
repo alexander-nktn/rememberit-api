@@ -1,4 +1,5 @@
 package rememberit.card;
+import rememberit.card.types.service.GenerateCardsTranslationsOptions;
 import rememberit.exception.ServiceMethodContext;
 import rememberit.translation.Translation;
 import rememberit.image.ImageService;
@@ -7,6 +8,7 @@ import rememberit.textCollector.TextCollectorService;
 import rememberit.card.types.service.CreateCardOptions;
 import rememberit.card.types.service.GenerateCardsOptions;
 import rememberit.card.types.service.UpdateCardOptions;
+import rememberit.translation.types.service.CreateTranslationOptions;
 import rememberit.translation.types.service.TranslateTranslationOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,49 +127,73 @@ public class CardService {
                 String range = "'Saved translations'!A1:A";
                 try {
                     List<List<Object>> values = this.wordCollectionService.getSpreadsheetValues(spreadsheetId, range);
+                    List<GenerateCardsTranslationsOptions> translations = new ArrayList<>();
 
-                    System.out.println(values);
+                    for (List<Object> row : values) {
+                        translations.add(
+                                new GenerateCardsTranslationsOptions.Builder()
+                                        .text(row.get(0).toString())
+                                        .build()
+                        );
+                    }
 
-                    opts.texts = List.of(values.stream()
-                            .map(row -> row.get(0).toString())
-                            .toArray(String[]::new));
+                    opts.translations = translations;
                 } catch (Exception error) {
                     throw new RuntimeException("Failed to get spreadsheet values", error);
                 }
             }
 
             try {
-                  for (String text : opts.texts) {
-                      Translation translation = this.translationService.translateAndSave(
-                          new TranslateTranslationOptions(
-                              text,
-                              opts.sourceLanguage,
-                              opts.targetLanguage
-                          ), ctx);
+                  for (GenerateCardsTranslationsOptions generateCardsTranslationsOptions : opts.translations) {
+                      Translation translation;
+
+                      if (!generateCardsTranslationsOptions.translatedText.isEmpty()) {
+                          translation = this.translationService.create(
+                              new CreateTranslationOptions.Builder()
+                                  .text(generateCardsTranslationsOptions.text)
+                                  .translatedText(generateCardsTranslationsOptions.translatedText)
+                                  .sourceLanguage(opts.sourceLanguage)
+                                  .targetLanguage(opts.targetLanguage)
+                                  .build(),
+                              ctx
+                          );
+                      } else {
+                          translation = this.translationService.translateAndSave(
+                                  new TranslateTranslationOptions.Builder()
+                                          .text(generateCardsTranslationsOptions.text)
+                                          .sourceLanguage(opts.sourceLanguage)
+                                          .targetLanguage(opts.targetLanguage)
+                                          .build()
+                                  , ctx);
+                      }
 
                       // implement when AI is ready
 //                      cardCreateOptions.imageUrl = this.imageService.generate(cardCreateOptions.translation.translatedWord, ctx).block();
 
-                      this.imageService.generateWithBackground(
-                          translation.text,
-                          translation.translatedText,
-                          opts.backgroundColor,
-                          opts.textColor,
-                          opts.translatedTextColor,
-                          ctx
-                      );
+//                      this.imageService.generateWithBackground(
+//                          translation.text,
+//                          translation.translatedText,
+//                          opts.backgroundColor,
+//                          opts.textColor,
+//                          opts.translatedTextColor,
+//                          ctx
+//                      );
                       String imageUrl = "no image";
+
+                      if (translation == null) {
+                          continue;
+                      }
 
                       cards.add(
                           this.create(
-                                new CreateCardOptions(
-                                    ctx.user,
-                                    translation,
-                                    imageUrl,
-                                    opts.backgroundColor,
-                                    opts.textColor,
-                                    opts.translatedTextColor
-                                ),
+                                new CreateCardOptions.Builder()
+                                        .translation(translation)
+                                        .imageUrl(imageUrl)
+                                        .backgroundColor(opts.backgroundColor)
+                                        .textColor(opts.textColor)
+                                        .translatedTextColor(opts.translatedTextColor)
+                                        .user(ctx.user)
+                                        .build(),
                                 ctx
                           )
                       );

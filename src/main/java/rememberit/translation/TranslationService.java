@@ -42,7 +42,7 @@ public class TranslationService {
         return translation.get();
     }
 
-    private Translation create(CreateTranslationOptions opts, ServiceMethodContext ctx) {
+    public Translation create(CreateTranslationOptions opts, ServiceMethodContext ctx) {
         Translation card = new Translation(
                 opts.text,
                 opts.translatedText,
@@ -84,12 +84,12 @@ public class TranslationService {
 
     public Translation translateAndSave(TranslateTranslationOptions opts, ServiceMethodContext ctx) {
         String translatedText = this.translate(opts, ctx);
-        CreateTranslationOptions translationCreateOptions = new CreateTranslationOptions(
-                opts.text,
-                translatedText,
-                opts.sourceLanguage,
-                opts.targetLanguage
-        );
+        CreateTranslationOptions translationCreateOptions = new CreateTranslationOptions.Builder()
+                .text(opts.text)
+                .translatedText(translatedText)
+                .sourceLanguage(opts.sourceLanguage)
+                .targetLanguage(opts.targetLanguage)
+                .build();
 
         return this.create(translationCreateOptions, ctx);
     }

@@ -46,11 +46,16 @@ type User {
 input GenerateCardsInput {
     backgroundColor: String
     sourceLanguage: String
-    spreadsheetUrl: String
     targetLanguage: String
+    spreadsheetUrl: String
     textColor: String
-    texts: [String!]!
+    translations: [GenerateCardsTranslationsInput!]!
     translatedTextColor: String
+}
+
+input GenerateCardsTranslationsInput {
+    text: String
+    translatedText: String
 }
 
 input UpdateCardInput {

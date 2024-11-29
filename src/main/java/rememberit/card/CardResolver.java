@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import rememberit.card.types.resolver.GenerateCardsInput;
 import rememberit.card.types.resolver.UpdateCardInput;
 import rememberit.card.types.service.GenerateCardsOptions;
+import rememberit.card.types.service.GenerateCardsTranslationsOptions;
 import rememberit.card.types.service.UpdateCardOptions;
 import rememberit.exception.ServiceMethodContext;
 import rememberit.translation.Translation;
@@ -18,8 +19,9 @@ import rememberit.translation.TranslationService;
 import rememberit.translation.types.service.UpdateTranslationOptions;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-    @Controller
+@Controller
     public class CardResolver {
 
         private static final Logger log = LoggerFactory.getLogger(CardResolver.class);
@@ -52,11 +54,11 @@ import java.util.List;
 
         if (input.translation != null) {
             translationService.update(
-                    new UpdateTranslationOptions.Builder(input.translation.id)
-                            .text(input.translation.text)
-                            .translatedText(input.translation.translatedText)
-                            .build()
-                    , ctx);
+                new UpdateTranslationOptions.Builder(input.translation.id)
+                    .text(input.translation.text)
+                    .translatedText(input.translation.translatedText)
+                    .build()
+                , ctx);
         }
 
         UpdateCardOptions options = new UpdateCardOptions.Builder(input.id)
@@ -79,16 +81,23 @@ import java.util.List;
     public List<Card> generateCards(@Argument GenerateCardsInput input) {
         ServiceMethodContext ctx = new ServiceMethodContext();
 
-        // Convert GenerateCardInput to GenerateCardOptions
-        GenerateCardsOptions options = new GenerateCardsOptions(
-                input.getTexts(),
-                input.getSpreadsheetUrl(),
-                input.getSourceLanguage(),
-                input.getTargetLanguage(),
-                input.getBackgroundColor(),
-                input.getTextColor(),
-                input.getTranslatedTextColor()
-        );
+        GenerateCardsOptions options = new GenerateCardsOptions.Builder()
+            .backgroundColor(input.backgroundColor)
+            .spreadsheetUrl(input.spreadsheetUrl)
+            .textColor(input.textColor)
+            .translatedTextColor(input.translatedTextColor)
+            .sourceLanguage(input.sourceLanguage)
+            .targetLanguage(input.targetLanguage)
+            .translations(
+                input.translations.stream()
+                    .map(translation -> new GenerateCardsTranslationsOptions.Builder()
+                        .text(translation.text)
+                        .translatedText(translation.translatedText)
+                        .build())
+                    .collect(Collectors.toList())
+            )
+            .build();
+
 
         return cardService.generate(options, ctx);
     }
