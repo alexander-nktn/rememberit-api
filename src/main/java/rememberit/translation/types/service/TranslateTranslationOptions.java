@@ -1,32 +1,34 @@
 package rememberit.translation.types.service;
 
+import rememberit.translation.types.common.Language;
+
 public class TranslateTranslationOptions {
     public String text;
-    public String sourceLanguage;
-    public String targetLanguage;
+    public Language sourceLanguage;
+    public Language targetLanguage;
 
     public TranslateTranslationOptions(Builder builder) {
-        this.text = text;
-        this.sourceLanguage = sourceLanguage;
-        this.targetLanguage = targetLanguage;
+        this.text = builder.text;
+        this.sourceLanguage = builder.sourceLanguage;
+        this.targetLanguage = builder.targetLanguage;
     }
 
     public static class Builder {
         private String text;
-        private String sourceLanguage;
-        private String targetLanguage;
+        private Language sourceLanguage;
+        private Language targetLanguage;
 
         public Builder text(String text) {
             this.text = text;
             return this;
         }
 
-        public Builder sourceLanguage(String sourceLanguage) {
+        public Builder sourceLanguage(Language sourceLanguage) {
             this.sourceLanguage = sourceLanguage;
             return this;
         }
 
-        public Builder targetLanguage(String targetLanguage) {
+        public Builder targetLanguage(Language targetLanguage) {
             this.targetLanguage = targetLanguage;
             return this;
         }

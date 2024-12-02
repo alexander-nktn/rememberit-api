@@ -12,12 +12,12 @@ public class CreateCardOptions {
     public String translatedTextColor;
 
     public CreateCardOptions(Builder builder) {
-        this.user = user;
-        this.translation = translation;
-        this.imageUrl = imageUrl;
-        this.backgroundColor = backgroundColor;
-        this.textColor = textColor;
-        this.translatedTextColor = translatedTextColor;
+        this.user = builder.user;
+        this.translation = builder.translation;
+        this.imageUrl = builder.imageUrl;
+        this.backgroundColor = builder.backgroundColor;
+        this.textColor = builder.textColor;
+        this.translatedTextColor = builder.translatedTextColor;
     }
 
     public static class Builder {

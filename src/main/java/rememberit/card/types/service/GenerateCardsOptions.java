@@ -1,5 +1,7 @@
 package rememberit.card.types.service;
 
+import rememberit.translation.types.common.Language;
+
 import java.util.List;
 
 public class GenerateCardsOptions {
@@ -8,8 +10,8 @@ public class GenerateCardsOptions {
     public String backgroundColor;
     public String textColor;
     public String translatedTextColor;
-    public String sourceLanguage;
-    public String targetLanguage;
+    public Language sourceLanguage;
+    public Language targetLanguage;
 
     public GenerateCardsOptions(Builder builder) {
         this.translations = builder.translations;
@@ -27,8 +29,8 @@ public class GenerateCardsOptions {
         private String backgroundColor;
         private String textColor;
         private String translatedTextColor;
-        private String sourceLanguage;
-        private String targetLanguage;
+        private Language sourceLanguage;
+        private Language targetLanguage;
 
         public Builder translations(List<GenerateCardsTranslationsOptions> translations) {
             this.translations = translations;
@@ -55,12 +57,12 @@ public class GenerateCardsOptions {
             return this;
         }
 
-        public Builder sourceLanguage(String sourceLanguage) {
+        public Builder sourceLanguage(Language sourceLanguage) {
             this.sourceLanguage = sourceLanguage;
             return this;
         }
 
-        public Builder targetLanguage(String targetLanguage) {
+        public Builder targetLanguage(Language targetLanguage) {
             this.targetLanguage = targetLanguage;
             return this;
         }

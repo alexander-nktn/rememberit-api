@@ -102,18 +102,6 @@ import java.util.stream.Collectors;
         return cardService.generate(options, ctx);
     }
 
-    @SchemaMapping(typeName = "Card", field = "sourceLanguage")
-    public String getSourceLanguage(Card card) {
-        Translation translation = card.getTranslation();
-        return translation != null ? translation.getSourceLanguage() : null;
-    }
-
-    @SchemaMapping(typeName = "Card", field = "targetLanguage")
-    public String getTargetLanguage(Card card) {
-        Translation translation = card.getTranslation();
-        return translation != null ? translation.getTargetLanguage() : null;
-    }
-
     @SchemaMapping(typeName = "Card", field = "translation")
     public Translation getTranslation(Card card) {
         return card.getTranslation();

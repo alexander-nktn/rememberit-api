@@ -73,8 +73,8 @@ public class TranslationService {
         try {
             com.google.cloud.translate.Translation translation = translate.translate(
                     opts.text,
-                    Translate.TranslateOption.targetLanguage(opts.targetLanguage),
-                    Translate.TranslateOption.sourceLanguage(opts.sourceLanguage),
+                    Translate.TranslateOption.targetLanguage(opts.targetLanguage.getCode()),
+                    Translate.TranslateOption.sourceLanguage(opts.sourceLanguage.getCode()),
                     Translate.TranslateOption.model("base"));
             return translation.getTranslatedText();
         } catch (Exception error) {

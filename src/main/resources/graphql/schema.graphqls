@@ -8,8 +8,8 @@ directive @oneOf on INPUT_OBJECT
 
 type Card {
     id: ID!
-    sourceLanguage: String
-    targetLanguage: String
+    sourceLanguage: Language
+    targetLanguage: Language
     backgroundColor: String
     textColor: String
     translatedTextColor: String
@@ -30,8 +30,8 @@ type Query {
 
 type Translation {
     id: ID!
-    sourceLanguage: String
-    targetLanguage: String
+    sourceLanguage: Language
+    targetLanguage: Language
     text: String
     translatedText: String
 }
@@ -45,8 +45,8 @@ type User {
 
 input GenerateCardsInput {
     backgroundColor: String
-    sourceLanguage: String
-    targetLanguage: String
+    sourceLanguage: Language
+    targetLanguage: Language
     spreadsheetUrl: String
     textColor: String
     translations: [GenerateCardsTranslationsInput!]!
@@ -71,4 +71,97 @@ input UpdateTranslationInput {
     id: ID!
     text: String
     translatedText: String
+}
+
+enum Language {
+    AFRIKAANS
+    ALBANIAN
+    AMHARIC
+    ARABIC
+    ARMENIAN
+    AZERBAIJANI
+    BASQUE
+    BELARUSIAN
+    BENGALI
+    BOSNIAN
+    BULGARIAN
+    CATALAN
+    CEBUANO
+    CHEROKEE
+    CHINESE_SIMPLIFIED
+    CHINESE_TRADITIONAL
+    CROATIAN
+    CZECH
+    DANISH
+    DUTCH
+    ENGLISH
+    ESPERANTO
+    ESTONIAN
+    FILIPINO
+    FINNISH
+    FRENCH
+    GALICIAN
+    GEORGIAN
+    GERMAN
+    GREEK
+    GUJARATI
+    HAUSA
+    HEBREW
+    HINDI
+    HUNGARIAN
+    ICELANDIC
+    INDONESIAN
+    IGBO
+    IRISH
+    ITALIAN
+    JAPANESE
+    KANNADA
+    KAZAKH
+    KHMER
+    KOREAN
+    KYRGYZ
+    LAOTHIAN
+    LATIN
+    LATVIAN
+    LITHUANIAN
+    MACEDONIAN
+    MALAGASY
+    MALAY
+    MALAYALAM
+    MALTESE
+    MAORI
+    MARATHI
+    MONGOLIAN
+    NEPALI
+    NORWEGIAN
+    PASHTO
+    PERSIAN
+    POLISH
+    PORTUGUESE
+    ROMANIAN
+    RUSSIAN
+    SCOTS_GAELIC
+    SERBIAN
+    SLOVAK
+    SLOVENIAN
+    SOMALI
+    SPANISH
+    SUNDANESE
+    SWAHILI
+    SWEDISH
+    TAGALOG
+    TAJIK
+    TAMIL
+    TATAR
+    TELUGU
+    THAI
+    TURKISH
+    UKRAINIAN
+    URDU
+    UZBEK
+    VIETNAMESE
+    WELSH
+    YIDDISH
+    YORUBA
+    ZULU
 }
