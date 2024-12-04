@@ -73,19 +73,21 @@ public class ImageService {
             String translatedTextColor,
             ServiceMethodContext ctx
     ) throws IOException {
-        int width = 364;
-        int height = 170;
+        // Use a high DPI directly (e.g., 300 DPI for print-like quality)
+        int dpi = 300;
+        int targetWidth = 364;
+        int targetHeight = 170;
+        double scaleFactor = dpi / 72.0; // Scale factor for DPI
+        int width = (int) (targetWidth * scaleFactor);
+        int height = (int) (targetHeight * scaleFactor);
 
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bufferedImage.createGraphics();
 
-        // Enable anti-aliasing for text
-        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-        // Set transparent background
-//        g2d.setComposite(AlphaComposite.Clear);
-//        g2d.fillRect(0, 0, width, height);
-//        g2d.setComposite(AlphaComposite.SrcOver);
+        // Enable high-quality rendering hints
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 
         // Set background color
         g2d.setColor(Color.decode(backgroundColor));
@@ -93,7 +95,7 @@ public class ImageService {
 
         // Draw first line (text), centered
         g2d.setColor(Color.decode(textColor));
-        Font font1 = new Font("Arial", Font.BOLD, 26);
+        Font font1 = new Font("Arial", Font.BOLD, (int) (26 * scaleFactor));
         g2d.setFont(font1);
         FontMetrics fm1 = g2d.getFontMetrics();
         int textWidth1 = fm1.stringWidth(text);
@@ -103,19 +105,19 @@ public class ImageService {
 
         // Draw second line (translatedText), at bottom-right
         g2d.setColor(Color.decode(translatedTextColor));
-        Font font2 = new Font("Arial", Font.BOLD, 12);
+        Font font2 = new Font("Arial", Font.BOLD, (int) (12 * scaleFactor));
         g2d.setFont(font2);
         FontMetrics fm2 = g2d.getFontMetrics();
         int textWidth2 = fm2.stringWidth(translatedText);
-        int margin = 20; // Margin from the edges
+        int margin = (int) (20 * scaleFactor);
         int x2 = width - textWidth2 - margin;
         int y2 = height - fm2.getDescent() - margin;
         g2d.drawString(translatedText, x2, y2);
 
-        // Dispose the graphics object
+        // Dispose of graphics object
         g2d.dispose();
 
-        // Convert the BufferedImage to a byte array
+        // Save the high-DPI image directly without scaling
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, "png", baos);
         baos.flush();
