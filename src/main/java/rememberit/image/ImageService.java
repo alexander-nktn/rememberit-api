@@ -65,7 +65,7 @@ public class ImageService {
 //        }
 //    }
 
-    public void generateWithBackground(
+    public byte[] generateWithBackground(
             String text,
             String translatedText,
             String backgroundColor,
@@ -87,11 +87,11 @@ public class ImageService {
 //        g2d.fillRect(0, 0, width, height);
 //        g2d.setComposite(AlphaComposite.SrcOver);
 
+        // Set background color
         g2d.setColor(Color.decode(backgroundColor));
         g2d.fillRect(0, 0, width, height);
 
-
-        // Draw first line (word1), centered
+        // Draw first line (text), centered
         g2d.setColor(Color.decode(textColor));
         Font font1 = new Font("Arial", Font.BOLD, 26);
         g2d.setFont(font1);
@@ -122,12 +122,6 @@ public class ImageService {
         byte[] imageBytes = baos.toByteArray();
         baos.close();
 
-        // Specify the output file path
-        String outputPath = text + "_" + translatedText + ".png";
-
-        // Save the image bytes to a file
-        FileOutputStream fos = new FileOutputStream(outputPath);
-        fos.write(imageBytes);
-        fos.close();
+        return imageBytes;
     }
 }

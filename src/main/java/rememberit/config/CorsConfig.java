@@ -9,10 +9,17 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/graphql") // Apply CORS to the /graphql endpoint
-                .allowedOrigins("http://localhost:5173") // Allow requests from your frontend
-                .allowedMethods("GET", "POST", "OPTIONS") // Allow these HTTP methods
-                .allowedHeaders("*") // Allow all headers
-                .allowCredentials(true); // Allow cookies, authentication headers, etc.
+        // Allow CORS for /api/** endpoints
+        registry.addMapping("/api/**")
+                .allowedOrigins("http://localhost:5173")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+
+        registry.addMapping("/graphql")
+                .allowedOrigins("http://localhost:5173")
+                .allowedMethods("GET", "POST", "PUT", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }
