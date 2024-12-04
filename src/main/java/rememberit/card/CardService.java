@@ -147,7 +147,7 @@ public class CardService {
                   for (GenerateCardsTranslationsOptions generateCardsTranslationsOptions : opts.translations) {
                       Translation translation;
 
-                      if (!generateCardsTranslationsOptions.translatedText.isEmpty()) {
+                      if (generateCardsTranslationsOptions.translatedText != null && !generateCardsTranslationsOptions.translatedText.isEmpty()) {
                           translation = this.translationService.create(
                               new CreateTranslationOptions.Builder()
                                   .text(generateCardsTranslationsOptions.text)
