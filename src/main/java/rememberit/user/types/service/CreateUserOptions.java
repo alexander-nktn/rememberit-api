@@ -1,49 +1,23 @@
-package rememberit.user;
+package rememberit.user.types.service;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
-
-@Entity(name = "users")
-@Getter
-@Setter
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    public String id;
-
+public class CreateUserOptions {
     public String firstName;
-
     public String lastName;
-
     public String email;
-
     public String password;
 
-    public User(Builder builder) {
-        this.id = builder.id;
+    public CreateUserOptions(Builder builder) {
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
         this.email = builder.email;
-        this.email = password;
+        this.password = builder.password;
     }
 
-    public User() {}
-
     public static class Builder {
-        private String id;
         private String firstName;
         private String lastName;
         private String email;
         private String password;
-
-        public Builder id(String id) {
-            this.id = id;
-            return this;
-        }
 
         public Builder firstName(String firstName) {
             this.firstName = firstName;
@@ -65,8 +39,8 @@ public class User {
             return this;
         }
 
-        public User build() {
-            return new User(this);
+        public CreateUserOptions build() {
+            return new CreateUserOptions(this);
         }
     }
 }

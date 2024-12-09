@@ -8,8 +8,6 @@ directive @oneOf on INPUT_OBJECT
 
 type Card {
     id: ID!
-    sourceLanguage: Language
-    targetLanguage: Language
     backgroundColor: String
     textColor: String
     translatedTextColor: String
@@ -21,11 +19,40 @@ type Mutation {
     deleteCard(id: ID!): String
     generateCards(input: GenerateCardsInput!): [Card!]!
     updateCard(input: UpdateCardInput!): Card
+    signIn(input: SignInInput!): SignInResponse!
+    signUp(input: SignUpInput!): String!
+    refreshToken(refreshToken: String!): SignInResponse!
+    updateUser(input: UpdateUserInput!): User!
 }
 
 type Query {
     getCardById(id: ID!): Card
     getCards: [Card!]!
+    getMe: User!
+}
+
+input SignInInput {
+    email: String!
+    password: String!
+}
+
+type SignInResponse {
+    accessToken: String
+    refreshToken: String
+}
+
+input SignUpInput {
+    email: String!
+    firstName: String!
+    lastName: String!
+    password: String!
+}
+
+input UpdateUserInput {
+    id: ID!
+    email: String
+    firstName: String
+    lastName: String
 }
 
 type Translation {

@@ -6,7 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rememberit.exception.ServiceMethodContext;
+import rememberit.config.ServiceMethodContext;
 import rememberit.image.ImageService;
 import rememberit.translation.Translation;
 

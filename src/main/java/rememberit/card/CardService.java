@@ -1,6 +1,6 @@
 package rememberit.card;
 import rememberit.card.types.service.GenerateCardsTranslationsOptions;
-import rememberit.exception.ServiceMethodContext;
+import rememberit.config.ServiceMethodContext;
 import rememberit.translation.Translation;
 import rememberit.image.ImageService;
 import rememberit.translation.TranslationService;
@@ -12,7 +12,6 @@ import rememberit.translation.types.service.CreateTranslationOptions;
 import rememberit.translation.types.service.TranslateTranslationOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -27,20 +26,20 @@ public class CardService {
     private final TranslationService translationService;
     private final ImageService imageService;
     private final TextCollectorService wordCollectionService;
+    private final CardRepository cardRepository;
 
 
     public CardService(
             TranslationService translationService,
             ImageService imageService,
-            TextCollectorService wordCollectionService
+            TextCollectorService wordCollectionService,
+            CardRepository cardRepository
     ) {
         this.translationService = translationService;
         this.imageService = imageService;
         this.wordCollectionService = wordCollectionService;
+        this.cardRepository = cardRepository;
     }
-
-    @Autowired
-    private CardRepository cardRepository;
 
     public List<Card> getMany() {
         List<Card> cards = cardRepository.findAll();
@@ -124,17 +123,30 @@ public class CardService {
             if (opts.spreadsheetUrl != null && !opts.spreadsheetUrl.isEmpty()) {
                 spreadsheetId = this.getIdFromUrl(opts.spreadsheetUrl);
 
-                String range = "'Saved translations'!A1:A";
+                String range = "'Saved translations'!A:B";
                 try {
                     List<List<Object>> values = this.wordCollectionService.getSpreadsheetValues(spreadsheetId, range);
                     List<GenerateCardsTranslationsOptions> translations = new ArrayList<>();
 
                     for (List<Object> row : values) {
-                        translations.add(
-                                new GenerateCardsTranslationsOptions.Builder()
-                                        .text(row.get(0).toString())
-                                        .build()
-                        );
+                        if (row.isEmpty()) {
+                            continue;
+                        }
+
+                        if (row.size() == 1) {
+                            translations.add(
+                                    new GenerateCardsTranslationsOptions.Builder()
+                                            .text(row.getFirst().toString())
+                                            .build()
+                            );
+                        } else if (row.size() == 2) {
+                            translations.add(
+                                    new GenerateCardsTranslationsOptions.Builder()
+                                            .text(row.getFirst().toString())
+                                            .translatedText(row.get(1).toString())
+                                            .build()
+                            );
+                        }
                     }
 
                     opts.translations = translations;
@@ -192,7 +204,7 @@ public class CardService {
                                         .backgroundColor(opts.backgroundColor)
                                         .textColor(opts.textColor)
                                         .translatedTextColor(opts.translatedTextColor)
-                                        .user(ctx.user)
+                                        .user(ctx.getUser())
                                         .build(),
                                 ctx
                           )

@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: classpath:db/changelog/changes/001-add-password-to-users.yaml
+  - include:
+      file: classpath:db/changelog/changes/002-add-refresh-tokens-table.yaml

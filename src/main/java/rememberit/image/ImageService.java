@@ -1,11 +1,9 @@
 package rememberit.image;
 
-import rememberit.exception.ServiceMethodContext;
+import rememberit.config.ServiceMethodContext;
 import org.springframework.stereotype.Service;
 //import org.springframework.web.reactive.function.client.WebClient;
 //import reactor.core.publisher.Mono;
-
-import java.io.FileOutputStream;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

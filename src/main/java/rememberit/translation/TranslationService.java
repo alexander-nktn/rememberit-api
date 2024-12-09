@@ -1,10 +1,9 @@
 package rememberit.translation;
 import jakarta.persistence.EntityNotFoundException;
-import rememberit.exception.ServiceMethodContext;
+import rememberit.config.ServiceMethodContext;
 import com.google.cloud.translate.Translate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.google.cloud.translate.TranslateOptions;
 import rememberit.translation.types.service.CreateTranslationOptions;
@@ -17,15 +16,16 @@ import java.util.Optional;
 @Service
 public class TranslationService {
     private static final Logger logger = LoggerFactory.getLogger(TranslationService.class);
-
     private final Translate translate;
+    private final TranslationRepository translationRepository;
 
-    public TranslationService() {
+    public TranslationService(
+            TranslationRepository translationRepository
+    ) {
         this.translate = TranslateOptions.getDefaultInstance().getService();
+        this.translationRepository = translationRepository;
     }
 
-    @Autowired
-    private TranslationRepository translationRepository;
 
     public Optional<Translation> getOne(String id) {
         return translationRepository.findById(id);

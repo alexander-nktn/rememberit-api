@@ -7,7 +7,7 @@ import rememberit.card.types.resolver.UpdateCardInput;
 import rememberit.card.types.service.GenerateCardsOptions;
 import rememberit.card.types.service.GenerateCardsTranslationsOptions;
 import rememberit.card.types.service.UpdateCardOptions;
-import rememberit.exception.ServiceMethodContext;
+import rememberit.config.ServiceMethodContext;
 import rememberit.translation.Translation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -17,6 +17,7 @@ import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 import rememberit.translation.TranslationService;
 import rememberit.translation.types.service.UpdateTranslationOptions;
+import graphql.schema.DataFetchingEnvironment;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,19 +39,28 @@ import java.util.stream.Collectors;
         }
 
     @QueryMapping
-    public Card getCardById(@Argument String id) {
-        ServiceMethodContext ctx = new ServiceMethodContext();
+    public Card getCardById(
+            @Argument final String id,
+            DataFetchingEnvironment env
+    ) {
+        ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
+
         return cardService.getOneOrFail(id, ctx);
     }
 
     @QueryMapping
-    public List<Card> getCards() {
+    public List<Card> getCards(DataFetchingEnvironment env) {
+        ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
+
         return cardService.getMany();
     }
 
     @MutationMapping
-    public Card updateCard(@Argument UpdateCardInput input) {
-        ServiceMethodContext ctx = new ServiceMethodContext();
+    public Card updateCard(
+            @Argument UpdateCardInput input,
+            DataFetchingEnvironment env
+    ) {
+        ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
 
         if (input.translation != null) {
             translationService.update(
@@ -71,15 +81,22 @@ import java.util.stream.Collectors;
     }
 
     @MutationMapping
-    public String deleteCard(@Argument String id) {
-        ServiceMethodContext ctx = new ServiceMethodContext();
+    public String deleteCard(
+            @Argument final String id,
+            DataFetchingEnvironment env
+    ) {
+        ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
         cardService.delete(id, ctx);
+
         return id;
     }
 
     @MutationMapping
-    public List<Card> generateCards(@Argument GenerateCardsInput input) {
-        ServiceMethodContext ctx = new ServiceMethodContext();
+    public List<Card> generateCards(
+            @Argument GenerateCardsInput input,
+            DataFetchingEnvironment env
+    ) {
+        ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
 
         GenerateCardsOptions options = new GenerateCardsOptions.Builder()
             .backgroundColor(input.backgroundColor)
