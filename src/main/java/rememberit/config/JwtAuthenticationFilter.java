@@ -33,6 +33,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        // Skip token validation for the local development environment if needed
+//          String host = request.getHeader("Host");
+//        if (host.equals("localhost:8080")) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+
         String header = request.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
