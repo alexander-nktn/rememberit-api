@@ -1,72 +1,47 @@
 package rememberit.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import rememberit.role.Role;
 
-@Entity(name = "users")
 @Getter
 @Setter
+@Entity
+@Builder
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    public String id;
+    private String id;
 
-    public String firstName;
+    @Column(nullable = false)
+    private String firstName;
 
-    public String lastName;
+    @Column(nullable = false)
+    private String lastName;
 
-    public String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    public String password;
+    @Column(nullable = false)
+    private String password;
 
-    public User(Builder builder) {
-        this.id = builder.id;
-        this.firstName = builder.firstName;
-        this.lastName = builder.lastName;
-        this.email = builder.email;
-        this.email = password;
-    }
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
+    // Default constructor for JPA
     public User() {}
 
-    public static class Builder {
-        private String id;
-        private String firstName;
-        private String lastName;
-        private String email;
-        private String password;
-
-        public Builder id(String id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder firstName(String firstName) {
-            this.firstName = firstName;
-            return this;
-        }
-
-        public Builder lastName(String lastName) {
-            this.lastName = lastName;
-            return this;
-        }
-
-        public Builder email(String email) {
-            this.email = email;
-            return this;
-        }
-
-        public Builder password(String password) {
-            this.password = password;
-            return this;
-        }
-
-        public User build() {
-            return new User(this);
-        }
+    // All-args constructor used by Lombok's @Builder
+    public User(String id, String firstName, String lastName, String email, String password, Role role) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
     }
 }

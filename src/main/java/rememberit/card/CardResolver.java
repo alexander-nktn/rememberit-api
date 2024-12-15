@@ -2,6 +2,7 @@ package rememberit.card;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import rememberit.card.types.resolver.GenerateCardsInput;
 import rememberit.card.types.resolver.UpdateCardInput;
 import rememberit.card.types.service.GenerateCardsOptions;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
         }
 
     @QueryMapping
+//    @PreAuthorize("hasAuthority('CARD_CAN_GET')")
     public Card getCardById(
             @Argument final String id,
             DataFetchingEnvironment env

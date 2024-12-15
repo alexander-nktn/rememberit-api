@@ -40,12 +40,12 @@ public class UserService {
     }
 
     public User create(CreateUserOptions opts, ServiceMethodContext ctx) {
-        User user = new User.Builder()
-                .firstName(opts.firstName)
-                .lastName(opts.lastName)
-                .email(opts.email)
-                .password(opts.password)
-                .build();
+            User user = User.builder()
+                    .firstName(opts.firstName)
+                    .lastName(opts.lastName)
+                    .email(opts.email)
+                    .password(opts.password)
+                    .build();
 
         try {
             return userRepository.save(user);
