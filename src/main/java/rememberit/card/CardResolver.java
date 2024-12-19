@@ -2,7 +2,7 @@ package rememberit.card;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import rememberit.card.types.resolver.GenerateCardsInput;
 import rememberit.card.types.resolver.UpdateCardInput;
 import rememberit.card.types.service.GenerateCardsOptions;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
         }
 
     @QueryMapping
-//    @PreAuthorize("hasAuthority('CARD_CAN_GET')")
+    @PreAuthorize("hasAuthority('CARD_CAN_GET')")
     public Card getCardById(
             @Argument final String id,
             DataFetchingEnvironment env
@@ -51,13 +51,16 @@ import java.util.stream.Collectors;
     }
 
     @QueryMapping
+    @PreAuthorize("hasAuthority('CARD_CAN_LIST')")
     public List<Card> getCards(DataFetchingEnvironment env) {
         ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
 
         return cardService.getMany();
     }
 
+
     @MutationMapping
+    @PreAuthorize("hasAuthority('CARD_CAN_UPDATE')")
     public Card updateCard(
             @Argument UpdateCardInput input,
             DataFetchingEnvironment env
@@ -66,14 +69,16 @@ import java.util.stream.Collectors;
 
         if (input.translation != null) {
             translationService.update(
-                new UpdateTranslationOptions.Builder(input.translation.id)
-                    .text(input.translation.text)
-                    .translatedText(input.translation.translatedText)
-                    .build()
-                , ctx);
+                UpdateTranslationOptions.builder()
+                        .id(input.translation.id)
+                        .text(input.translation.text)
+                        .translatedText(input.translation.translatedText)
+                        .build(),
+                    ctx);
         }
 
-        UpdateCardOptions options = new UpdateCardOptions.Builder(input.id)
+        UpdateCardOptions options = UpdateCardOptions.builder()
+                .id(input.id)
                 .backgroundColor(input.backgroundColor)
                 .translatedTextColor(input.translatedTextColor)
                 .textColor(input.textColor)
@@ -83,6 +88,7 @@ import java.util.stream.Collectors;
     }
 
     @MutationMapping
+    @PreAuthorize("hasAuthority('CARD_CAN_DELETE')")
     public String deleteCard(
             @Argument final String id,
             DataFetchingEnvironment env
@@ -94,13 +100,14 @@ import java.util.stream.Collectors;
     }
 
     @MutationMapping
+    @PreAuthorize("hasAuthority('CARD_CAN_GENERATE')")
     public List<Card> generateCards(
             @Argument GenerateCardsInput input,
             DataFetchingEnvironment env
     ) {
         ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
 
-        GenerateCardsOptions options = new GenerateCardsOptions.Builder()
+        GenerateCardsOptions options = GenerateCardsOptions.builder()
             .backgroundColor(input.backgroundColor)
             .spreadsheetUrl(input.spreadsheetUrl)
             .textColor(input.textColor)
@@ -109,7 +116,7 @@ import java.util.stream.Collectors;
             .targetLanguage(input.targetLanguage)
             .translations(
                 input.translations.stream()
-                    .map(translation -> new GenerateCardsTranslationsOptions.Builder()
+                    .map(translation -> GenerateCardsTranslationsOptions.builder()
                         .text(translation.text)
                         .translatedText(translation.translatedText)
                         .build())

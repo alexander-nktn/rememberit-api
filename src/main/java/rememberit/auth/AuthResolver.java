@@ -23,7 +23,7 @@ public class AuthResolver {
 
     @MutationMapping
     public SignInResponse signIn(@Argument SignInInput input) {
-        SignInOptions options = new SignInOptions.Builder()
+        SignInOptions options = SignInOptions.builder()
                 .email(input.email)
                 .password(input.password)
                 .build();
@@ -37,7 +37,7 @@ public class AuthResolver {
     ) {
         ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
 
-        SignUpOptions options = new SignUpOptions.Builder()
+        SignUpOptions options = SignUpOptions.builder()
                 .email(input.email)
                 .firstName(input.firstName)
                 .lastName(input.lastName)

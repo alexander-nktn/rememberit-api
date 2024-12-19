@@ -3,6 +3,8 @@ package rememberit.auth;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import rememberit.user.User;
 
 import java.util.Date;
@@ -17,8 +19,12 @@ public class RefreshToken {
     private String id;
 
     private String token;
+
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+
     private Date expiryDate;
 
     public RefreshToken() {

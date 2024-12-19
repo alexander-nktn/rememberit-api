@@ -2,6 +2,7 @@ package rememberit.user;
 
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import rememberit.config.ServiceMethodContext;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
@@ -20,17 +21,21 @@ public class UserResolver {
     }
 
     @QueryMapping
+    @PreAuthorize("hasAuthority('USER_CAN_GET')")
     public User getMe(DataFetchingEnvironment env) {
         ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
         return ctx.getUser();
     }
 
     @MutationMapping
+    @PreAuthorize("hasAuthority('USER_CAN_UPDATE')")
     public User updateUser(
             @Argument UpdateUserInput input,
             DataFetchingEnvironment env
     ) {
         ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
+
+        System.out.println("input: " + input.firstName);
 
         UpdateUserOptions options = new UpdateUserOptions.Builder(input.id)
                 .firstName(input.firstName)
@@ -39,6 +44,19 @@ public class UserResolver {
                 .build();
 
         return userService.update(options, ctx);
+    }
+
+
+    @MutationMapping
+    @PreAuthorize("hasAuthority('USER_CAN_DELETE')")
+    public String deleteUser(
+            @Argument String id,
+            DataFetchingEnvironment env
+    ) {
+        ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
+        userService.delete(id, ctx);
+
+        return id;
     }
 
 

@@ -1,9 +1,12 @@
 package rememberit.user;
+import rememberit.card.Card;
 import rememberit.config.ServiceMethodContext;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import rememberit.role.Role;
+import rememberit.role.types.RoleType;
 import rememberit.user.types.service.CreateUserOptions;
 import rememberit.user.types.service.UpdateUserOptions;
 
@@ -40,22 +43,29 @@ public class UserService {
     }
 
     public User create(CreateUserOptions opts, ServiceMethodContext ctx) {
-            User user = User.builder()
+        Role role = new Role();
+        role.setId("9cd1ebb8-7036-4f5a-bc38-b52a3a71b4bf");
+        role.setName(RoleType.USER);
+
+        User user = User.builder()
                     .firstName(opts.firstName)
                     .lastName(opts.lastName)
                     .email(opts.email)
                     .password(opts.password)
+                    .role(role)
                     .build();
 
         try {
             return userRepository.save(user);
         } catch (Exception error) {
-            throw new RuntimeException("Failed to create translation", error);
+            throw new RuntimeException("Failed to create user", error);
         }
     }
 
     public User update(UpdateUserOptions opts, ServiceMethodContext ctx) {
         User user = this.getOneOrFail(opts.id, ctx);
+
+        System.out.println("opts.firstName: " + opts.firstName);
 
         if (opts.firstName != null) {
             user.setFirstName(opts.firstName);
@@ -75,11 +85,28 @@ public class UserService {
             user.setEmail(opts.email);
         }
 
+        System.out.println("User: " + user);
+
         try {
             return userRepository.save(user);
         } catch (Exception error) {
             throw new RuntimeException("Failed to update translation", error);
         }
 
+    }
+
+    public void delete(String id, ServiceMethodContext ctx) {
+        ctx.addProperty("id", id);
+        Optional<User> card = this.getOne(id);
+
+        if (card.isEmpty()) {
+            return;
+        }
+
+        try {
+            userRepository.deleteById(id);
+        } catch (Exception error) {
+            throw new RuntimeException("Failed to delete user", error);
+        }
     }
 }

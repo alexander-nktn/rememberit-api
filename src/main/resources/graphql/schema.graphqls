@@ -7,7 +7,7 @@ schema {
 directive @oneOf on INPUT_OBJECT
 
 type Card {
-    id: ID!
+    id: String!
     backgroundColor: String
     textColor: String
     translatedTextColor: String
@@ -16,17 +16,18 @@ type Card {
 }
 
 type Mutation {
-    deleteCard(id: ID!): String
+    deleteCard(id: String!): String!
     generateCards(input: GenerateCardsInput!): [Card!]!
     updateCard(input: UpdateCardInput!): Card
     signIn(input: SignInInput!): SignInResponse!
     signUp(input: SignUpInput!): String!
     refreshToken(refreshToken: String!): SignInResponse!
     updateUser(input: UpdateUserInput!): User!
+    deleteUser(id: String!): String!
 }
 
 type Query {
-    getCardById(id: ID!): Card
+    getCardById(id: String!): Card
     getCards: [Card!]!
     getMe: User!
 }
@@ -49,14 +50,14 @@ input SignUpInput {
 }
 
 input UpdateUserInput {
-    id: ID!
+    id: String!
     email: String
     firstName: String
     lastName: String
 }
 
 type Translation {
-    id: ID!
+    id: String!
     sourceLanguage: Language
     targetLanguage: Language
     text: String
@@ -66,8 +67,20 @@ type Translation {
 type User {
     email: String
     firstName: String
-    id: ID!
+    id: String!
     lastName: String
+    role: Role!
+}
+
+type Role {
+    id: String!
+    name: String
+    permissions: [Permission!]!
+}
+
+type Permission {
+    id: String!
+    type: String
 }
 
 input GenerateCardsInput {
@@ -86,7 +99,7 @@ input GenerateCardsTranslationsInput {
 }
 
 input UpdateCardInput {
-    id: ID!
+    id: String!
     imageUrl: String
     backgroundColor: String
     textColor: String
@@ -95,7 +108,7 @@ input UpdateCardInput {
 }
 
 input UpdateTranslationInput {
-    id: ID!
+    id: String!
     text: String
     translatedText: String
 }

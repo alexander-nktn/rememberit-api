@@ -39,7 +39,7 @@ public class AuthService {
             throw new RuntimeException("Email already in use");
         }
 
-        CreateUserOptions createOptions = new CreateUserOptions.Builder()
+        CreateUserOptions createOptions = CreateUserOptions.builder()
                 .email(options.email)
                 .firstName(options.firstName)
                 .lastName(options.lastName)

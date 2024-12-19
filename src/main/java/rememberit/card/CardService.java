@@ -83,14 +83,14 @@ public class CardService {
         }
     }
 
-    public Card update(UpdateCardOptions cardUpdateOptions, ServiceMethodContext ctx) {
-        ctx.addProperty("cardUpdateOptions", cardUpdateOptions);
-        Card card = getOneOrFail(cardUpdateOptions.id, ctx);
+    public Card update(UpdateCardOptions opts, ServiceMethodContext ctx) {
+        ctx.addProperty("cardUpdateOptions", opts);
+        Card card = getOneOrFail(opts.id, ctx);
 
-        card.setBackgroundColor(cardUpdateOptions.backgroundColor);
-        card.setTextColor(cardUpdateOptions.textColor);
-        card.setTranslatedTextColor(cardUpdateOptions.translatedTextColor);
-        card.setImageUrl(cardUpdateOptions.imageUrl);
+        card.setBackgroundColor(opts.backgroundColor);
+        card.setTextColor(opts.textColor);
+        card.setTranslatedTextColor(opts.translatedTextColor);
+        card.setImageUrl(opts.imageUrl);
 
         try {
             return cardRepository.save(card);
@@ -135,13 +135,13 @@ public class CardService {
 
                         if (row.size() == 1) {
                             translations.add(
-                                    new GenerateCardsTranslationsOptions.Builder()
+                                    GenerateCardsTranslationsOptions.builder()
                                             .text(row.getFirst().toString())
                                             .build()
                             );
                         } else if (row.size() == 2) {
                             translations.add(
-                                    new GenerateCardsTranslationsOptions.Builder()
+                                    GenerateCardsTranslationsOptions.builder()
                                             .text(row.getFirst().toString())
                                             .translatedText(row.get(1).toString())
                                             .build()
@@ -149,7 +149,7 @@ public class CardService {
                         }
                     }
 
-                    opts.translations = translations;
+                    opts.setTranslations(translations);
                 } catch (Exception error) {
                     throw new RuntimeException("Failed to get spreadsheet values", error);
                 }
@@ -198,7 +198,7 @@ public class CardService {
 
                       cards.add(
                           this.create(
-                                new CreateCardOptions.Builder()
+                                CreateCardOptions.builder()
                                         .translation(translation)
                                         .imageUrl(imageUrl)
                                         .backgroundColor(opts.backgroundColor)

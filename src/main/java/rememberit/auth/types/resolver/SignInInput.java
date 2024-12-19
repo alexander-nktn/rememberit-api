@@ -1,20 +1,17 @@
 package rememberit.auth.types.resolver;
 
-import rememberit.auth.types.service.SignInOptions;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
-//public class SignInInput extends SignInOptions {
-//    public SignInInput(SignInInput.Builder builder) {
-//        super(builder);
-//    }
-//
-//    public static class Builder extends SignInOptions.Builder {
-//        public SignInInput build() {
-//            return new SignInInput(this);
-//        }
-//    }
-//}
-
+@Getter
+@Setter
 public class SignInInput {
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
     public String email;
+
+    @NotBlank(message = "Password is required")
     public String password;
 }

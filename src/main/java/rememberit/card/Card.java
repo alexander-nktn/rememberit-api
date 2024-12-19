@@ -1,5 +1,7 @@
 package rememberit.card;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import rememberit.translation.Translation;
 import rememberit.user.User;
 import jakarta.persistence.*;
@@ -7,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Entity
 @Table(name = "cards")
@@ -41,8 +44,9 @@ public class Card {
     public String textColor;
     public String translatedTextColor;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     public User user;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -53,7 +57,7 @@ public class Card {
         this.createdAt = new Date();
     }
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
     @JoinColumn(name = "translation_id", nullable = false)
     public Translation translation;
 }

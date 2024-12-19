@@ -1,300 +1,272 @@
 databaseChangeLog:
-- changeSet:
-    id: 1734303656095-1
-    author: alexander (generated)
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: permissions_pkey
-            name: id
-            type: VARCHAR(255)
-        - column:
-            constraints:
-              nullable: false
-            name: type
-            type: VARCHAR(255)
-        tableName: permissions
-- changeSet:
-    id: 1734303656095-2
-    author: alexander (generated)
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: roles_pkey
-            name: id
-            type: VARCHAR(255)
-        - column:
-            name: name
-            type: VARCHAR(255)
-        tableName: roles
-- changeSet:
-    id: 1734303656095-3
-    author: alexander (generated)
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: translations_pkey
-            name: id
-            type: VARCHAR(255)
-        - column:
-            name: source_language
-            type: VARCHAR(255)
-        - column:
-            name: target_language
-            type: VARCHAR(255)
-        - column:
-            name: text
-            type: VARCHAR(255)
-        - column:
-            name: translated_text
-            type: VARCHAR(255)
-        tableName: translations
-- changeSet:
-    id: 1734303656095-4
-    author: alexander (generated)
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: cards_pkey
-            name: id
-            type: VARCHAR(255)
-        - column:
-            name: background_color
-            type: VARCHAR(255)
-        - column:
-            name: created_at
-            type: TIMESTAMP WITHOUT TIME ZONE
-        - column:
-            name: image_url
-            type: VARCHAR(255)
-        - column:
-            name: text_color
-            type: VARCHAR(255)
-        - column:
-            name: translated_text_color
-            type: VARCHAR(255)
-        - column:
-            constraints:
-              nullable: false
-            name: translation_id
-            type: VARCHAR(255)
-        - column:
-            constraints:
-              nullable: false
-            name: user_id
-            type: VARCHAR(255)
-        tableName: cards
-- changeSet:
-    id: 1734303656095-5
-    author: alexander (generated)
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: users_pkey
-            name: id
-            type: VARCHAR(255)
-        - column:
-            constraints:
-              nullable: false
-            name: email
-            type: VARCHAR(255)
-        - column:
-            constraints:
-              nullable: false
-            name: first_name
-            type: VARCHAR(255)
-        - column:
-            constraints:
-              nullable: false
-            name: last_name
-            type: VARCHAR(255)
-        - column:
-            constraints:
-              nullable: false
-            name: password
-            type: VARCHAR(255)
-        - column:
-            constraints:
-              nullable: false
-            name: role_id
-            type: VARCHAR(255)
-        tableName: users
-- changeSet:
-    id: 1734303656095-6
-    author: alexander (generated)
-    changes:
-    - addUniqueConstraint:
-        columnNames: type
-        constraintName: uk_mvhxqf2hk0ophq3s7byxlii44
-        tableName: permissions
-- changeSet:
-    id: 1734303656095-7
-    author: alexander (generated)
-    changes:
-    - addUniqueConstraint:
-        columnNames: translation_id
-        constraintName: uk_5f1i47p0j6usd9v9yj0s1jxuv
-        tableName: cards
-- changeSet:
-    id: 1734303656095-8
-    author: alexander (generated)
-    changes:
-    - addUniqueConstraint:
-        columnNames: email
-        constraintName: uk_6dotkott2kjsp8vw4d0m25fb7
-        tableName: users
-- changeSet:
-    id: 1734303656095-9
-    author: alexander (generated)
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: refresh_tokens_pkey
-            name: id
-            type: VARCHAR(255)
-        - column:
-            name: expiry_date
-            type: TIMESTAMP WITHOUT TIME ZONE
-        - column:
-            name: token
-            type: VARCHAR(255)
-        - column:
-            name: user_id
-            type: VARCHAR(255)
-        tableName: refresh_tokens
-- changeSet:
-    id: 1734303656095-10
-    author: alexander (generated)
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: role_permissions_pkey
-            name: role_id
-            type: VARCHAR(255)
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: role_permissions_pkey
-            name: permission_id
-            type: VARCHAR(255)
-        tableName: role_permissions
-- changeSet:
-    id: 1734303656095-11
-    author: alexander (generated)
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: user_id
-        baseTableName: refresh_tokens
-        constraintName: FK6lvfmfk5xl82dog4lxsjipdgl
-        deferrable: false
-        initiallyDeferred: false
-        onDelete: NO ACTION
-        onUpdate: NO ACTION
-        referencedColumnNames: id
-        referencedTableName: users
-        validate: true
-- changeSet:
-    id: 1734303656095-12
-    author: alexander (generated)
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: permission_id
-        baseTableName: role_permissions
-        constraintName: FK7am4kr5w6djq0jyto1enqvdmr
-        deferrable: false
-        initiallyDeferred: false
-        onDelete: NO ACTION
-        onUpdate: NO ACTION
-        referencedColumnNames: id
-        referencedTableName: permissions
-        validate: true
-- changeSet:
-    id: 1734303656095-13
-    author: alexander (generated)
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: role_id
-        baseTableName: role_permissions
-        constraintName: FK7ei19b69fni0wr4fcpf7pvt66
-        deferrable: false
-        initiallyDeferred: false
-        onDelete: NO ACTION
-        onUpdate: NO ACTION
-        referencedColumnNames: id
-        referencedTableName: roles
-        validate: true
-- changeSet:
-    id: 1734303656095-14
-    author: alexander (generated)
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: translation_id
-        baseTableName: cards
-        constraintName: FK9a1sqpdjip8roly35svyk5gyd
-        deferrable: false
-        initiallyDeferred: false
-        onDelete: NO ACTION
-        onUpdate: NO ACTION
-        referencedColumnNames: id
-        referencedTableName: translations
-        validate: true
-- changeSet:
-    id: 1734303656095-15
-    author: alexander (generated)
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: role_id
-        baseTableName: users
-        constraintName: FKp5sxbjiwpsgy5kuqrhpqi5tod
-        deferrable: false
-        initiallyDeferred: false
-        onDelete: NO ACTION
-        onUpdate: NO ACTION
-        referencedColumnNames: id
-        referencedTableName: roles
-        validate: true
-- changeSet:
-    id: 1734303656095-16
-    author: alexander (generated)
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: user_id
-        baseTableName: cards
-        constraintName: FKsox32c9n5t2y3qfxaio9i6edp
-        deferrable: false
-        initiallyDeferred: false
-        onDelete: NO ACTION
-        onUpdate: NO ACTION
-        referencedColumnNames: id
-        referencedTableName: users
-        validate: true
+    - changeSet:
+          id: 1734481699482-1
+          author: alexander
+          changes:
+              - createTable:
+                    tableName: translations
+                    columns:
+                        - column:
+                              name: id
+                              type: VARCHAR(255)
+                              constraints:
+                                  primaryKey: true
+                                  primaryKeyName: translations_pkey
+                                  nullable: false
+                        - column:
+                              name: source_language
+                              type: VARCHAR(255)
+                        - column:
+                              name: target_language
+                              type: VARCHAR(255)
+                        - column:
+                              name: text
+                              type: VARCHAR(255)
+                        - column:
+                              name: translated_text
+                              type: VARCHAR(255)
 
+    - changeSet:
+          id: 1734481699482-2
+          author: alexander
+          changes:
+              - createTable:
+                    tableName: users
+                    columns:
+                        - column:
+                              name: id
+                              type: VARCHAR(255)
+                              constraints:
+                                  primaryKey: true
+                                  primaryKeyName: users_pkey
+                                  nullable: false
+                        - column:
+                              name: email
+                              type: VARCHAR(255)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: first_name
+                              type: VARCHAR(255)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: last_name
+                              type: VARCHAR(255)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: password
+                              type: VARCHAR(255)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: role_id
+                              type: VARCHAR(255)
+                              constraints:
+                                  nullable: false
+
+    - changeSet:
+          id: 1734481699482-3
+          author: alexander
+          changes:
+              - createTable:
+                    tableName: cards
+                    columns:
+                        - column:
+                              name: id
+                              type: VARCHAR(255)
+                              constraints:
+                                  primaryKey: true
+                                  primaryKeyName: cards_pkey
+                                  nullable: false
+                        - column:
+                              name: background_color
+                              type: VARCHAR(255)
+                        - column:
+                              name: created_at
+                              type: TIMESTAMP WITHOUT TIME ZONE
+                        - column:
+                              name: image_url
+                              type: VARCHAR(255)
+                        - column:
+                              name: text_color
+                              type: VARCHAR(255)
+                        - column:
+                              name: translated_text_color
+                              type: VARCHAR(255)
+                        - column:
+                              name: translation_id
+                              type: VARCHAR(255)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: user_id
+                              type: VARCHAR(255)
+                              constraints:
+                                  nullable: false
+
+    - changeSet:
+          id: 1734481699482-4
+          author: alexander
+          changes:
+              - createTable:
+                    tableName: refresh_tokens
+                    columns:
+                        - column:
+                              name: id
+                              type: VARCHAR(255)
+                              constraints:
+                                  primaryKey: true
+                                  primaryKeyName: refresh_tokens_pkey
+                                  nullable: false
+                        - column:
+                              name: expiry_date
+                              type: TIMESTAMP WITHOUT TIME ZONE
+                        - column:
+                              name: token
+                              type: VARCHAR(255)
+                        - column:
+                              name: user_id
+                              type: VARCHAR(255)
+                              constraints:
+                                  nullable: false
+
+    - changeSet:
+          id: 1734481699482-5
+          author: alexander
+          changes:
+              - createTable:
+                    tableName: roles
+                    columns:
+                        - column:
+                              name: id
+                              type: VARCHAR(255)
+                              constraints:
+                                  primaryKey: true
+                                  primaryKeyName: roles_pkey
+                                  nullable: false
+                        - column:
+                              name: name
+                              type: VARCHAR(255)
+                              constraints:
+                                  nullable: false
+
+    - changeSet:
+          id: 1734481699482-6
+          author: alexander
+          changes:
+              - createTable:
+                    tableName: permissions
+                    columns:
+                        - column:
+                              name: id
+                              type: VARCHAR(255)
+                              constraints:
+                                  primaryKey: true
+                                  primaryKeyName: permissions_pkey
+                                  nullable: false
+                        - column:
+                              name: type
+                              type: VARCHAR(255)
+                              constraints:
+                                  nullable: false
+
+    - changeSet:
+          id: 1734481699482-7
+          author: alexander
+          changes:
+              - createTable:
+                    tableName: role_permissions
+                    columns:
+                        - column:
+                              name: role_id
+                              type: VARCHAR(255)
+                              constraints:
+                                  primaryKey: true
+                                  primaryKeyName: role_permissions_pkey
+                                  nullable: false
+                        - column:
+                              name: permission_id
+                              type: VARCHAR(255)
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+
+    - changeSet:
+          id: 1734481699482-8
+          author: alexander
+          changes:
+              - addForeignKeyConstraint:
+                    baseTableName: refresh_tokens
+                    baseColumnNames: user_id
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    constraintName: FK_refresh_tokens_user_id
+                    onDelete: CASCADE
+                    onUpdate: CASCADE
+
+    - changeSet:
+          id: 1734481699482-9
+          author: alexander
+          changes:
+              - addForeignKeyConstraint:
+                    baseTableName: cards
+                    baseColumnNames: user_id
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    constraintName: FK_cards_user_id
+                    onDelete: CASCADE
+                    onUpdate: CASCADE
+
+    - changeSet:
+          id: 1734481699482-10
+          author: alexander
+          changes:
+              - addForeignKeyConstraint:
+                    baseTableName: cards
+                    baseColumnNames: translation_id
+                    referencedTableName: translations
+                    referencedColumnNames: id
+                    constraintName: FK_cards_translation_id
+                    onDelete: CASCADE
+                    onUpdate: CASCADE
+
+    - changeSet:
+          id: 1734481699482-11
+          author: alexander
+          changes:
+              - addForeignKeyConstraint:
+                    baseTableName: users
+                    baseColumnNames: role_id
+                    referencedTableName: roles
+                    referencedColumnNames: id
+                    constraintName: FK_users_role_id
+                    onDelete: NO ACTION
+                    onUpdate: CASCADE
+
+    - changeSet:
+          id: 1734481699482-12
+          author: alexander
+          changes:
+              - addForeignKeyConstraint:
+                    baseTableName: role_permissions
+                    baseColumnNames: role_id
+                    referencedTableName: roles
+                    referencedColumnNames: id
+                    constraintName: FK_role_permissions_role_id
+                    onDelete: CASCADE
+                    onUpdate: CASCADE
+
+    - changeSet:
+          id: 1734481699482-13
+          author: alexander
+          changes:
+              - addForeignKeyConstraint:
+                    baseTableName: role_permissions
+                    baseColumnNames: permission_id
+                    referencedTableName: permissions
+                    referencedColumnNames: id
+                    constraintName: FK_role_permissions_permission_id
+                    onDelete: CASCADE
+                    onUpdate: CASCADE
