@@ -1,10 +1,11 @@
 package rememberit.user;
-import rememberit.card.Card;
-import rememberit.config.ServiceMethodContext;
-import jakarta.persistence.EntityNotFoundException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import rememberit.config.ServiceMethodContext;
+import rememberit.exception.ApplicationException;
+import rememberit.exception.ErrorCode;
 import rememberit.role.Role;
 import rememberit.role.types.RoleType;
 import rememberit.user.types.service.CreateUserOptions;
@@ -15,11 +16,10 @@ import java.util.Optional;
 @Service
 public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     private final UserRepository userRepository;
 
-    public UserService(
-            UserRepository userRepository
-    ) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -32,40 +32,64 @@ public class UserService {
     }
 
     public User getOneOrFail(String id, ServiceMethodContext ctx) {
-        ctx.addProperty("id", id);
-        Optional<User> user  = this.getOne(id);
-
-        if (user.isEmpty()) {
-            throw new EntityNotFoundException(String.format("User with id: %s not found", id));
-        }
-
-        return user.get();
+        ctx.addProperty("userId", id);
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ApplicationException(
+                        String.format("User with id %s not found", id),
+                        ErrorCode.USER_NOT_FOUND,
+                        ctx
+                ));
     }
 
     public User create(CreateUserOptions opts, ServiceMethodContext ctx) {
+        ctx.addProperty("email", opts.email);
+
+        if (getOneByEmail(opts.email).isPresent()) {
+            throw new ApplicationException(
+                    String.format("Email %s is already in use", opts.email),
+                    ErrorCode.USER_EMAIL_ALREADY_EXISTS,
+                    ctx
+            );
+        }
+
         Role role = new Role();
         role.setId("9cd1ebb8-7036-4f5a-bc38-b52a3a71b4bf");
         role.setName(RoleType.USER);
 
         User user = User.builder()
-                    .firstName(opts.firstName)
-                    .lastName(opts.lastName)
-                    .email(opts.email)
-                    .password(opts.password)
-                    .role(role)
-                    .build();
+                .firstName(opts.firstName)
+                .lastName(opts.lastName)
+                .email(opts.email)
+                .password(opts.password)
+                .role(role)
+                .build();
 
         try {
             return userRepository.save(user);
-        } catch (Exception error) {
-            throw new RuntimeException("Failed to create user", error);
+        } catch (Exception ex) {
+            logger.error("Error creating user: {}", ex.getMessage(), ex);
+            throw new ApplicationException(
+                    "An unexpected error occurred while creating the user",
+                    ErrorCode.USER_FAILED_TO_CREATE,
+                    ctx,
+                    ex
+            );
         }
     }
 
     public User update(UpdateUserOptions opts, ServiceMethodContext ctx) {
-        User user = this.getOneOrFail(opts.id, ctx);
+        ctx.addProperty("updateUserId", opts.id);
+        ctx.addProperty("updateEmail", opts.email);
 
-        System.out.println("opts.firstName: " + opts.firstName);
+        if (opts.id == null) {
+            throw new ApplicationException(
+                    "User ID must not be null",
+                    ErrorCode.USER_FAILED_TO_UPDATE,
+                    ctx
+            );
+        }
+
+        User user = getOneOrFail(opts.id, ctx);
 
         if (opts.firstName != null) {
             user.setFirstName(opts.firstName);
@@ -76,37 +100,45 @@ public class UserService {
         }
 
         if (opts.email != null) {
-            // Check if email is already taken
-            Optional<User> existingUser = this.getOneByEmail(opts.email);
-
+            Optional<User> existingUser = getOneByEmail(opts.email);
             if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
-                throw new RuntimeException("Email is already taken");
+                throw new ApplicationException(
+                        String.format("Email %s is already in use", opts.email),
+                        ErrorCode.USER_EMAIL_ALREADY_EXISTS,
+                        ctx
+                );
             }
             user.setEmail(opts.email);
         }
 
-        System.out.println("User: " + user);
-
         try {
             return userRepository.save(user);
-        } catch (Exception error) {
-            throw new RuntimeException("Failed to update translation", error);
+        } catch (Exception ex) {
+            logger.error("Error updating user: {}", ex.getMessage(), ex);
+            throw new ApplicationException(
+                    "An unexpected error occurred while updating the user",
+                    ErrorCode.USER_FAILED_TO_UPDATE,
+                    ctx,
+                    ex
+            );
         }
-
     }
 
     public void delete(String id, ServiceMethodContext ctx) {
-        ctx.addProperty("id", id);
-        Optional<User> card = this.getOne(id);
+        ctx.addProperty("deleteUserId", id);
 
-        if (card.isEmpty()) {
-            return;
-        }
+        User user = getOneOrFail(id, ctx);
 
         try {
-            userRepository.deleteById(id);
-        } catch (Exception error) {
-            throw new RuntimeException("Failed to delete user", error);
+            userRepository.delete(user);
+        } catch (Exception ex) {
+            logger.error("Error deleting user with ID {}: {}", id, ex.getMessage(), ex);
+            throw new ApplicationException(
+                    "An unexpected error occurred while deleting the user",
+                    ErrorCode.USER_FAILED_TO_DELETE,
+                    ctx,
+                    ex
+            );
         }
     }
 }

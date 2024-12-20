@@ -13,18 +13,4 @@ public class CreateUserOptions {
     public String email;
     public String password;
     public String roleId;
-
-    public CreateUserOptions(
-        String firstName,
-        String lastName,
-        String email,
-        String password,
-        String roleId
-    ) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.roleId = roleId;
-    }
 }

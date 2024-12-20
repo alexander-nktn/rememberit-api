@@ -37,7 +37,8 @@ public class UserResolver {
 
         System.out.println("input: " + input.firstName);
 
-        UpdateUserOptions options = new UpdateUserOptions.Builder(input.id)
+        UpdateUserOptions options = UpdateUserOptions.builder()
+                .id(input.id)
                 .firstName(input.firstName)
                 .lastName(input.lastName)
                 .email(input.email)

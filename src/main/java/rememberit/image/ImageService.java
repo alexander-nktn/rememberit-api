@@ -1,18 +1,24 @@
 package rememberit.image;
 
 import rememberit.config.ServiceMethodContext;
+import rememberit.exception.ApplicationException;
+import rememberit.exception.ErrorCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 //import org.springframework.web.reactive.function.client.WebClient;
 //import reactor.core.publisher.Mono;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import javax.imageio.ImageIO;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 @Service
 public class ImageService {
+    private static final Logger logger = LoggerFactory.getLogger(ImageService.class);
 
 //    private final WebClient webClient;
 //    String apiKey = System.getenv();
@@ -70,58 +76,83 @@ public class ImageService {
             String textColor,
             String translatedTextColor,
             ServiceMethodContext ctx
-    ) throws IOException {
-        // Use a high DPI directly (e.g., 300 DPI for print-like quality)
-        int dpi = 300;
-        int targetWidth = 364;
-        int targetHeight = 170;
-        double scaleFactor = dpi / 72.0; // Scale factor for DPI
-        int width = (int) (targetWidth * scaleFactor);
-        int height = (int) (targetHeight * scaleFactor);
+    ) {
+        logger.info("Starting image generation with text: {}, translatedText: {}", text, translatedText);
 
-        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = bufferedImage.createGraphics();
+        // Add context properties
+        ctx.addProperty("text", text);
+        ctx.addProperty("translatedText", translatedText);
+        ctx.addProperty("backgroundColor", backgroundColor);
+        ctx.addProperty("textColor", textColor);
+        ctx.addProperty("translatedTextColor", translatedTextColor);
 
-        // Enable high-quality rendering hints
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+        try {
+            // High DPI settings
+            int dpi = 300;
+            int targetWidth = 364;
+            int targetHeight = 170;
+            double scaleFactor = dpi / 72.0;
+            int width = (int) (targetWidth * scaleFactor);
+            int height = (int) (targetHeight * scaleFactor);
 
-        // Set background color
-        g2d.setColor(Color.decode(backgroundColor));
-        g2d.fillRect(0, 0, width, height);
+            BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = bufferedImage.createGraphics();
 
-        // Draw first line (text), centered
-        g2d.setColor(Color.decode(textColor));
-        Font font1 = new Font("Arial", Font.BOLD, (int) (26 * scaleFactor));
-        g2d.setFont(font1);
-        FontMetrics fm1 = g2d.getFontMetrics();
-        int textWidth1 = fm1.stringWidth(text);
-        int x1 = (width - textWidth1) / 2;
-        int y1 = (height - fm1.getHeight()) / 2 + fm1.getAscent();
-        g2d.drawString(text, x1, y1);
+            // Rendering hints for high quality
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 
-        // Draw second line (translatedText), at bottom-right
-        g2d.setColor(Color.decode(translatedTextColor));
-        Font font2 = new Font("Arial", Font.BOLD, (int) (12 * scaleFactor));
-        g2d.setFont(font2);
-        FontMetrics fm2 = g2d.getFontMetrics();
-        int textWidth2 = fm2.stringWidth(translatedText);
-        int margin = (int) (20 * scaleFactor);
-        int x2 = width - textWidth2 - margin;
-        int y2 = height - fm2.getDescent() - margin;
-        g2d.drawString(translatedText, x2, y2);
+            // Set background color
+            g2d.setColor(Color.decode(backgroundColor));
+            g2d.fillRect(0, 0, width, height);
 
-        // Dispose of graphics object
-        g2d.dispose();
+            // Draw main text (centered)
+            g2d.setColor(Color.decode(textColor));
+            Font mainFont = new Font("Arial", Font.BOLD, (int) (26 * scaleFactor));
+            g2d.setFont(mainFont);
+            FontMetrics mainMetrics = g2d.getFontMetrics();
+            int textWidth = mainMetrics.stringWidth(text);
+            int x = (width - textWidth) / 2;
+            int y = (height - mainMetrics.getHeight()) / 2 + mainMetrics.getAscent();
+            g2d.drawString(text, x, y);
 
-        // Save the high-DPI image directly without scaling
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, "png", baos);
-        baos.flush();
-        byte[] imageBytes = baos.toByteArray();
-        baos.close();
+            // Draw translated text (bottom-right)
+            g2d.setColor(Color.decode(translatedTextColor));
+            Font translatedFont = new Font("Arial", Font.PLAIN, (int) (12 * scaleFactor));
+            g2d.setFont(translatedFont);
+            FontMetrics translatedMetrics = g2d.getFontMetrics();
+            int translatedTextWidth = translatedMetrics.stringWidth(translatedText);
+            int margin = (int) (20 * scaleFactor);
+            int translatedX = width - translatedTextWidth - margin;
+            int translatedY = height - translatedMetrics.getDescent() - margin;
+            g2d.drawString(translatedText, translatedX, translatedY);
 
-        return imageBytes;
+            // Dispose graphics object
+            g2d.dispose();
+
+            // Convert to byte array
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "png", baos);
+            baos.flush();
+            byte[] imageBytes = baos.toByteArray();
+            baos.close();
+
+            logger.info("Image generation successful.");
+            return imageBytes;
+
+        } catch (IllegalArgumentException ex) {
+            logger.error("Invalid color format. Colors - Background: {}, Text: {}, TranslatedText: {}",
+                    backgroundColor, textColor, translatedTextColor, ex);
+            throw new ApplicationException("Invalid color format", ErrorCode.IMAGE_COLOR_FORMAT_INVALID, ctx, ex);
+
+        } catch (IOException ex) {
+            logger.error("Error generating image: {}", ex.getMessage(), ex);
+            throw new ApplicationException("Error generating image", ErrorCode.IMAGE_GENERATION_FAILED, ctx, ex);
+
+        } catch (Exception ex) {
+            logger.error("Unexpected error while generating image: {}", ex.getMessage(), ex);
+            throw new ApplicationException("Unexpected error while generating image", ErrorCode.IMAGE_GENERATION_FAILED, ctx, ex);
+        }
     }
 }

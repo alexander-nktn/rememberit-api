@@ -22,12 +22,18 @@ public class AuthResolver {
     }
 
     @MutationMapping
-    public SignInResponse signIn(@Argument SignInInput input) {
+    public SignInResponse signIn(
+            @Argument SignInInput input,
+            DataFetchingEnvironment env
+    ) {
+        ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
+
         SignInOptions options = SignInOptions.builder()
                 .email(input.email)
                 .password(input.password)
                 .build();
-        return authService.signIn(options);
+
+        return authService.signIn(options, ctx);
     }
 
     @MutationMapping
@@ -45,11 +51,18 @@ public class AuthResolver {
                 .build();
 
         authService.signUp(options, ctx);
+
         return "User signed up successfully";
     }
 
     @MutationMapping
-    public SignInResponse refreshToken(@Argument String refreshToken) {
-        return authService.refreshToken(refreshToken);
+    public SignInResponse refreshToken(
+            @Argument String refreshToken,
+            DataFetchingEnvironment env
+
+    ) {
+        ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
+
+        return authService.refreshToken(refreshToken, ctx);
     }
 }
