@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.8</version>
+		<version>3.2.7</version>
 		<relativePath/>
 	</parent>
 
@@ -58,12 +58,6 @@
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphiql-spring-boot-starter</artifactId>
 			<version>4.3.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.github.graphql-java</groupId>
-			<artifactId>graphql-java-annotations</artifactId>
-			<version>21.5</version>
 		</dependency>
 
 		<dependency>
@@ -250,8 +244,8 @@
 					<!-- Hibernate reference to generate diff -->
 					<referenceUrl>hibernate:spring:rememberit?dialect=org.hibernate.dialect.PostgreSQLDialect</referenceUrl>
 
-<!--					&lt;!&ndash; (Optional) Specify a file for diffs &ndash;&gt;-->
-<!--					<diffChangeLogFile>src/main/resources/db/changelog/changes/0001-init.yaml</diffChangeLogFile>-->
+					<!--					&lt;!&ndash; (Optional) Specify a file for diffs &ndash;&gt;-->
+					<!--					<diffChangeLogFile>src/main/resources/db/changelog/changes/0001-init.yaml</diffChangeLogFile>-->
 				</configuration>
 			</plugin>
 		</plugins>
