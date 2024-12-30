@@ -1,48 +1,31 @@
 package rememberit.translation.types.service;
 
+import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import rememberit.translation.types.common.Language;
 
+@Builder
 public class CreateTranslationOptions {
-    public String text;
-    public String translatedText;
-    public Language sourceLanguage;
-    public Language targetLanguage;
 
-    public CreateTranslationOptions(Builder builder) {
-        this.text = builder.text;
-        this.translatedText = builder.translatedText;
-        this.sourceLanguage = builder.sourceLanguage;
-        this.targetLanguage = builder.targetLanguage;
-    }
+    @NotNull
+    public final String text;
 
-    public static class Builder {
-        private String text;
-        private String translatedText;
-        private Language sourceLanguage;
-        private Language targetLanguage;
+    @NotNull
+    public final String translatedText;
 
-        public Builder text(String text) {
-            this.text = text;
-            return this;
-        }
+    @NotNull
+    public final Language sourceLanguage;
 
-        public Builder translatedText(String translatedText) {
-            this.translatedText = translatedText;
-            return this;
-        }
+    @NotNull
+    public final Language targetLanguage;
 
-        public Builder sourceLanguage(Language sourceLanguage) {
-            this.sourceLanguage = sourceLanguage;
-            return this;
-        }
-
-        public Builder targetLanguage(Language targetLanguage) {
-            this.targetLanguage = targetLanguage;
-            return this;
-        }
-
+    public static class CreateTranslationOptionsBuilder {
         public CreateTranslationOptions build() {
-            return new CreateTranslationOptions(this);
+            if (text == null) throw new IllegalStateException("Field 'text' must not be null");
+            if (translatedText == null) throw new IllegalStateException("Field 'translatedText' must not be null");
+            if (sourceLanguage == null) throw new IllegalStateException("Field 'sourceLanguage' must not be null");
+            if (targetLanguage == null) throw new IllegalStateException("Field 'targetLanguage' must not be null");
+            return new CreateTranslationOptions(text, translatedText, sourceLanguage, targetLanguage);
         }
     }
 }

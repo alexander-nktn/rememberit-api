@@ -74,14 +74,14 @@ public class CardService {
         ctx.addProperty("createCardOptions", opts);
         logger.info("Creating a new card with options: {}", opts);
 
-        Card card = new Card(
-                opts.imageUrl,
-                opts.backgroundColor,
-                opts.textColor,
-                opts.translatedTextColor,
-                opts.translation,
-                opts.user
-        );
+        Card card = Card.builder()
+                .imageUrl(opts.imageUrl)
+                .backgroundColor(opts.backgroundColor)
+                .textColor(opts.textColor)
+                .translatedTextColor(opts.translatedTextColor)
+                .translation(opts.translation)
+                .user(opts.user)
+                .build();
 
         try {
             Card savedCard = cardRepository.save(card);
@@ -187,7 +187,7 @@ public class CardService {
 
                 if (translationOption.getTranslatedText() != null && !translationOption.getTranslatedText().isEmpty()) {
                     translation = translationService.create(
-                            new CreateTranslationOptions.Builder()
+                            CreateTranslationOptions.builder()
                                     .text(translationOption.getText())
                                     .translatedText(translationOption.getTranslatedText())
                                     .sourceLanguage(opts.sourceLanguage)

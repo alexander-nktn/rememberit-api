@@ -49,12 +49,12 @@ public class TranslationService {
         ctx.addProperty("createTranslationOptions", opts);
         logger.info("Creating a new translation: text={}, targetLanguage={}", opts.text, opts.targetLanguage);
 
-        Translation translation = new Translation(
-                opts.text,
-                opts.translatedText,
-                opts.sourceLanguage,
-                opts.targetLanguage
-        );
+        Translation translation = Translation.builder()
+                .text(opts.text)
+                .translatedText(opts.translatedText)
+                .sourceLanguage(opts.sourceLanguage)
+                .targetLanguage(opts.targetLanguage)
+                .build();
 
         try {
             Translation savedTranslation = translationRepository.save(translation);
@@ -133,7 +133,7 @@ public class TranslationService {
 
         String translatedText = this.translate(opts, ctx);
 
-        CreateTranslationOptions translationCreateOptions = new CreateTranslationOptions.Builder()
+        CreateTranslationOptions translationCreateOptions = CreateTranslationOptions.builder()
                 .text(opts.text)
                 .translatedText(translatedText)
                 .sourceLanguage(opts.sourceLanguage)

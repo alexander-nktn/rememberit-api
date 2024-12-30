@@ -11,8 +11,8 @@ type Card {
     backgroundColor: String
     textColor: String
     translatedTextColor: String
-    translation: Translation
-    user: User
+    translation: Translation!
+    user: User!
 }
 
 type Mutation {

@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.7</version>
+		<version>3.4.1</version>
 		<relativePath/>
 	</parent>
 
@@ -143,12 +143,32 @@
 		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
+			<version>4.30.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-commercial</artifactId>
+			<version>4.30.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.liquibase.ext</groupId>
+			<artifactId>liquibase-hibernate6</artifactId>
+			<version>4.30.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>6.6.2.Final</version>
+			<version>6.4.9.Final</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-databind</artifactId>
+				</exclusion>
+				<!-- Exclude any extra Jackson modules if needed -->
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -229,23 +249,15 @@
 				<artifactId>liquibase-maven-plugin</artifactId>
 				<version>4.30.0</version>
 				<configuration>
-					<!-- Point to your master changelog file -->
 					<changeLogFile>src/main/resources/db/changelog/db.changelog-master.yaml</changeLogFile>
-
-					<!-- Output new diff changelogs here -->
-					<outputChangeLogFile>src/main/resources/db/changelog/changes/new-diff-changelog.yaml</outputChangeLogFile>
-
-					<!-- Database connection details -->
+					<outputChangeLogFile>src/main/resources/db/changelog/generated-changelog.yaml</outputChangeLogFile>
 					<url>jdbc:postgresql://localhost:5432/rememberit</url>
 					<username>alexander</username>
-					<password>111</password>
+					<password>your_password</password>
 					<driver>org.postgresql.Driver</driver>
-
-					<!-- Hibernate reference to generate diff -->
 					<referenceUrl>hibernate:spring:rememberit?dialect=org.hibernate.dialect.PostgreSQLDialect</referenceUrl>
-
-					<!--					&lt;!&ndash; (Optional) Specify a file for diffs &ndash;&gt;-->
-					<!--					<diffChangeLogFile>src/main/resources/db/changelog/changes/0001-init.yaml</diffChangeLogFile>-->
+					<diffChangeLogFile>src/main/resources/db/changelog/changes/init-changelog.sql</diffChangeLogFile>
+					<diffTypes>tables,columns,primaryKeys</diffTypes>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -1,9 +1,7 @@
 package rememberit.user;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import rememberit.role.Role;
 
 @Getter
@@ -11,6 +9,8 @@ import rememberit.role.Role;
 @Entity
 @Builder
 @Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,16 +32,6 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    // Default constructor for JPA
-    public User() {}
-
-    // All-args constructor used by Lombok's @Builder
-    public User(String id, String firstName, String lastName, String email, String password, Role role) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
+    @Column(nullable = false)
+    private String helloWorld;
 }
