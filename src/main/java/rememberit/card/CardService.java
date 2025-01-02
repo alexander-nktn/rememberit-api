@@ -197,7 +197,7 @@ public class CardService {
                     );
                 } else {
                     translation = translationService.translateAndSave(
-                            new TranslateTranslationOptions.Builder()
+                            TranslateTranslationOptions.builder()
                                     .text(translationOption.getText())
                                     .sourceLanguage(opts.sourceLanguage)
                                     .targetLanguage(opts.targetLanguage)

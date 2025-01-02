@@ -94,7 +94,7 @@ public class TranslationService {
         }
     }
 
-    private String translate(TranslateTranslationOptions opts, ServiceMethodContext ctx) {
+    public String translate(TranslateTranslationOptions opts, ServiceMethodContext ctx) {
         ctx.addProperty("translateOptions", opts);
         logger.info("Translating text: {}, targetLanguage={}", opts.text, opts.targetLanguage);
 

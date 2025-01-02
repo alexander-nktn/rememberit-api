@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rememberit.config.ServiceMethodContext;
 import rememberit.image.ImageService;
+import rememberit.image.types.service.GenerateImageWithBackgroundOptions;
 import rememberit.translation.Translation;
 
 import java.io.ByteArrayOutputStream;
@@ -68,15 +69,16 @@ public class CardController {
                     continue; // Skip cards without translations
                 }
 
+                GenerateImageWithBackgroundOptions opts = GenerateImageWithBackgroundOptions.builder()
+                        .text(translation.getText())
+                        .translatedText(translation.getTranslatedText())
+                        .backgroundColor(card.getBackgroundColor())
+                        .textColor(card.getTextColor())
+                        .translatedTextColor(card.getTranslatedTextColor())
+                        .build();
+
                 // Generate image bytes
-                byte[] imageBytes = imageService.generateWithBackground(
-                        translation.getText(),
-                        translation.getTranslatedText(),
-                        card.getBackgroundColor(),
-                        card.getTextColor(),
-                        card.getTranslatedTextColor(),
-                        ctx
-                );
+                byte[] imageBytes = imageService.generateWithBackground(opts, ctx);
 
                 // Define the ZIP entry name
                 String imageName = "card_" + card.getId() + ".png";

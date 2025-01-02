@@ -6,6 +6,7 @@ import rememberit.exception.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import rememberit.image.types.service.GenerateImageWithBackgroundOptions;
 
 //import org.springframework.web.reactive.function.client.WebClient;
 //import reactor.core.publisher.Mono;
@@ -69,22 +70,15 @@ public class ImageService {
 //        }
 //    }
 
-    public byte[] generateWithBackground(
-            String text,
-            String translatedText,
-            String backgroundColor,
-            String textColor,
-            String translatedTextColor,
-            ServiceMethodContext ctx
-    ) {
-        logger.info("Starting image generation with text: {}, translatedText: {}", text, translatedText);
+    public byte[] generateWithBackground(GenerateImageWithBackgroundOptions opts, ServiceMethodContext ctx) {
+        logger.info("Starting image generation with text: {}, translatedText: {}", opts.text, opts.translatedText);
 
         // Add context properties
-        ctx.addProperty("text", text);
-        ctx.addProperty("translatedText", translatedText);
-        ctx.addProperty("backgroundColor", backgroundColor);
-        ctx.addProperty("textColor", textColor);
-        ctx.addProperty("translatedTextColor", translatedTextColor);
+        ctx.addProperty("text", opts.text);
+        ctx.addProperty("translatedText", opts.translatedText);
+        ctx.addProperty("backgroundColor", opts.backgroundColor);
+        ctx.addProperty("textColor", opts.textColor);
+        ctx.addProperty("translatedTextColor", opts.translatedTextColor);
 
         try {
             // High DPI settings
@@ -104,29 +98,29 @@ public class ImageService {
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 
             // Set background color
-            g2d.setColor(Color.decode(backgroundColor));
+            g2d.setColor(Color.decode(opts.backgroundColor));
             g2d.fillRect(0, 0, width, height);
 
             // Draw main text (centered)
-            g2d.setColor(Color.decode(textColor));
+            g2d.setColor(Color.decode(opts.textColor));
             Font mainFont = new Font("Arial", Font.BOLD, (int) (26 * scaleFactor));
             g2d.setFont(mainFont);
             FontMetrics mainMetrics = g2d.getFontMetrics();
-            int textWidth = mainMetrics.stringWidth(text);
+            int textWidth = mainMetrics.stringWidth(opts.text);
             int x = (width - textWidth) / 2;
             int y = (height - mainMetrics.getHeight()) / 2 + mainMetrics.getAscent();
-            g2d.drawString(text, x, y);
+            g2d.drawString(opts.text, x, y);
 
             // Draw translated text (bottom-right)
-            g2d.setColor(Color.decode(translatedTextColor));
+            g2d.setColor(Color.decode(opts.translatedTextColor));
             Font translatedFont = new Font("Arial", Font.PLAIN, (int) (12 * scaleFactor));
             g2d.setFont(translatedFont);
             FontMetrics translatedMetrics = g2d.getFontMetrics();
-            int translatedTextWidth = translatedMetrics.stringWidth(translatedText);
+            int translatedTextWidth = translatedMetrics.stringWidth(opts.translatedText);
             int margin = (int) (20 * scaleFactor);
             int translatedX = width - translatedTextWidth - margin;
             int translatedY = height - translatedMetrics.getDescent() - margin;
-            g2d.drawString(translatedText, translatedX, translatedY);
+            g2d.drawString(opts.translatedText, translatedX, translatedY);
 
             // Dispose graphics object
             g2d.dispose();
@@ -143,7 +137,7 @@ public class ImageService {
 
         } catch (IllegalArgumentException ex) {
             logger.error("Invalid color format. Colors - Background: {}, Text: {}, TranslatedText: {}",
-                    backgroundColor, textColor, translatedTextColor, ex);
+                    opts.backgroundColor, opts.textColor, opts.translatedTextColor, ex);
             throw new ApplicationException("Invalid color format", ErrorCode.IMAGE_COLOR_FORMAT_INVALID, ctx, ex);
 
         } catch (IOException ex) {

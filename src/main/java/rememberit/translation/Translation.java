@@ -14,23 +14,29 @@ import rememberit.translation.types.common.Language;
 public class Translation {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    public String id;
 
     @NotNull
     @Column(nullable = false)
-    private String text;
+    public String text;
 
     @NotNull
     @Column(nullable = false)
-    private String translatedText;
+    public String translatedText;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "source_language")
-    private Language sourceLanguage;
+    @Column(
+            name = "source_language",
+            nullable = false
+    )
+    public Language sourceLanguage;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "target_language")
-    private Language targetLanguage;
+    @Column(
+            name = "target_language",
+            nullable = false
+    )
+    public Language targetLanguage;
 }
