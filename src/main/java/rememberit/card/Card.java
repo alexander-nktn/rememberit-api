@@ -24,27 +24,30 @@ public class Card {
     private String id;
 
     @Nullable
-    @Column(nullable = true)
+    @Column(nullable = true, name = "image_url")
     private String imageUrl;
 
     @Nullable
-    @Column(nullable = true)
+    @Column(nullable = true, name = "background_color")
     private String backgroundColor;
 
 
     @Nullable
-    @Column(nullable = true)
+    @Column(nullable = true, name = "text_color")
     private String textColor;
 
+    @Nullable
+    @Column(nullable = true, name = "translated_text_color")
     private String translatedTextColor;
 
     @NotNull(message = "User cannot be null")
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(nullable = false, name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, name = "created_at")
     private Date createdAt;
 
     @PrePersist

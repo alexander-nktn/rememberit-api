@@ -21,22 +21,16 @@ public class Translation {
     public String text;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, name = "translated_text")
     public String translatedText;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(
-            name = "source_language",
-            nullable = false
-    )
+    @Column(nullable = false, name = "source_language")
     public Language sourceLanguage;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(
-            name = "target_language",
-            nullable = false
-    )
+    @Column(nullable = false, name = "target_language")
     public Language targetLanguage;
 }

@@ -53,7 +53,7 @@ public class UserService {
         }
 
         Role role = new Role();
-        role.setId("9cd1ebb8-7036-4f5a-bc38-b52a3a71b4bf");
+        role.setId("065fe047-7350-4af7-853b-ac3ec0b83016");
         role.setName(RoleType.USER);
 
         User user = User.builder()

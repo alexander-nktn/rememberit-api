@@ -18,14 +18,16 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Column(nullable = false, unique = true)
     private String token;
+
+    @Column(nullable = false, name = "expiry_date")
+    private Date expiryDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
-
-    private Date expiryDate;
 
     public RefreshToken() {
     }

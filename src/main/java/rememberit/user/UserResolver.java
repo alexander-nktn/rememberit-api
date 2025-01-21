@@ -35,8 +35,6 @@ public class UserResolver {
     ) {
         ServiceMethodContext ctx = env.getGraphQlContext().get("serviceMethodContext");
 
-        System.out.println("input: " + input.firstName);
-
         UpdateUserOptions options = UpdateUserOptions.builder()
                 .id(input.id)
                 .firstName(input.firstName)

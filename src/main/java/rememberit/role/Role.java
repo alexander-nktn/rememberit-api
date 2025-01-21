@@ -18,6 +18,7 @@ public class Role {
     public String id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, unique = true)
     public RoleType name;
 
     @ManyToMany(fetch = FetchType.EAGER)
