@@ -1,7 +1,7 @@
 package rememberit.translation;
 
-import com.google.cloud.translate.Translate;
-import com.google.cloud.translate.TranslateOptions;
+//import com.google.cloud.translate.Translate;
+//import com.google.cloud.translate.TranslateOptions;
 import org.springframework.stereotype.Service;
 import rememberit.config.ServiceMethodContext;
 import rememberit.exception.ApplicationException;
@@ -15,14 +15,34 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
+
 @Service
 public class TranslationService {
     private static final Logger logger = LoggerFactory.getLogger(TranslationService.class);
-    private final Translate translate;
+//    private final Translate translate;
     private final TranslationRepository translationRepository;
 
+    @Value("${azure.translator.subscription-key}")
+    private String subscriptionKey;
+
+    @Value("${azure.translator.endpoint}")
+    private String endpoint;
+
+    @Value("${azure.translator.region}")
+    private String region;
+
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+
     public TranslationService(TranslationRepository translationRepository) {
-        this.translate = TranslateOptions.getDefaultInstance().getService();
+//        this.translate = TranslateOptions.getDefaultInstance().getService();
         this.translationRepository = translationRepository;
     }
 
@@ -94,28 +114,72 @@ public class TranslationService {
         }
     }
 
+//    public String translate(TranslateTranslationOptions opts, ServiceMethodContext ctx) {
+//        ctx.addProperty("translateOptions", opts);
+//        logger.info("Translating text: {}, targetLanguage={}", opts.text, opts.targetLanguage);
+//
+//        if (opts.text == null || opts.text.trim().isEmpty()) {
+//            logger.warn("Translation text is invalid: {}", opts.text);
+//            throw new ApplicationException(
+//                    "Text to translate is invalid",
+//                    ErrorCode.TRANSLATION_TEXT_INVALID,
+//                    ctx
+//            );
+//        }
+//
+//        try {
+//            com.google.cloud.translate.Translation translation = translate.translate(
+//                    opts.text,
+//                    Translate.TranslateOption.targetLanguage(opts.targetLanguage.getCode()),
+//                    Translate.TranslateOption.sourceLanguage(opts.sourceLanguage.getCode()),
+//                    Translate.TranslateOption.model("base")
+//            );
+//            logger.debug("Successfully translated text to {}: {}", opts.targetLanguage, translation.getTranslatedText());
+//            return translation.getTranslatedText();
+//        } catch (Exception ex) {
+//            logger.error("Failed to process translation: {}", ex.getMessage(), ex);
+//            throw new ApplicationException(
+//                    "Failed to process translation",
+//                    ErrorCode.TRANSLATION_FAILED_TO_PROCESS,
+//                    ctx,
+//                    ex
+//            );
+//        }
+//    }
+
     public String translate(TranslateTranslationOptions opts, ServiceMethodContext ctx) {
         ctx.addProperty("translateOptions", opts);
         logger.info("Translating text: {}, targetLanguage={}", opts.text, opts.targetLanguage);
 
+        // Validate input text
         if (opts.text == null || opts.text.trim().isEmpty()) {
-            logger.warn("Translation text is invalid: {}", opts.text);
-            throw new ApplicationException(
-                    "Text to translate is invalid",
-                    ErrorCode.TRANSLATION_TEXT_INVALID,
-                    ctx
-            );
+            throw new IllegalArgumentException("Text to translate must not be empty.");
         }
 
         try {
-            com.google.cloud.translate.Translation translation = translate.translate(
-                    opts.text,
-                    Translate.TranslateOption.targetLanguage(opts.targetLanguage.getCode()),
-                    Translate.TranslateOption.sourceLanguage(opts.sourceLanguage.getCode()),
-                    Translate.TranslateOption.model("base")
-            );
-            logger.debug("Successfully translated text to {}: {}", opts.targetLanguage, translation.getTranslatedText());
-            return translation.getTranslatedText();
+            // Prepare request payload
+            String requestBody = String.format("[{\"Text\": \"%s\"}]", opts.text);
+
+            // Set headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Content-Type", "application/json");
+            headers.set("Ocp-Apim-Subscription-Key", subscriptionKey);
+            headers.set("Ocp-Apim-Subscription-Region", region);
+
+            // Build API endpoint with target language
+            String apiUrl = String.format("%s/translate?api-version=3.0&to=%s", endpoint, opts.targetLanguage.getCode());
+
+            // Make POST request
+            HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+            ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.POST, requestEntity, String.class);
+
+            // Extract translated text from response
+            String responseBody = response.getBody();
+            assert responseBody != null;
+            int startIndex = responseBody.indexOf("\"text\":\"") + 8;
+            int endIndex = responseBody.indexOf("\"", startIndex);
+            return responseBody.substring(startIndex, endIndex);
+
         } catch (Exception ex) {
             logger.error("Failed to process translation: {}", ex.getMessage(), ex);
             throw new ApplicationException(
