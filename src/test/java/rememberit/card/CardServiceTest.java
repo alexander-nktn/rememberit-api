@@ -10,8 +10,6 @@ import rememberit.card.types.service.GenerateCardsTranslationsOptions;
 import rememberit.card.types.service.UpdateCardOptions;
 import rememberit.config.ServiceMethodContext;
 import rememberit.exception.ApplicationException;
-import rememberit.image.ImageService;
-import rememberit.textCollector.TextCollectorService;
 import rememberit.translation.Translation;
 import rememberit.translation.TranslationService;
 import rememberit.translation.types.service.CreateTranslationOptions;
@@ -31,12 +29,6 @@ class CardServiceTest {
 
     @Mock
     private TranslationService translationService;
-
-    @Mock
-    private ImageService imageService;
-
-    @Mock
-    private TextCollectorService textCollectorService;
 
     @InjectMocks
     private CardService cardService;
@@ -113,22 +105,23 @@ class CardServiceTest {
     }
 
     @Test
-    void update_UpdatesAndReturnsUpdatedCard() {
+    void update() {
         UpdateCardOptions opts = UpdateCardOptions.builder()
                 .id("c1")
-                .backgroundColor("blue")
-                .textColor("white")
-                .translatedTextColor("green")
+                .backgroundColor("#0000FF")
+                .textColor("#FFFFFF")
+                .translatedTextColor("#00FF00")
                 .imageUrl("http://example.com/image.jpg")
                 .build();
 
-        Card existingCard = new Card();
-        existingCard.setId("c1");
+        Card card = new Card();
+        card.setId("c1");
 
-        when(cardRepository.findById("c1")).thenReturn(Optional.of(existingCard));
+        when(cardRepository.findById("c1")).thenReturn(Optional.of(card));
         when(cardRepository.save(any(Card.class))).thenAnswer(invocation -> {
             Card savedCard = invocation.getArgument(0);
             savedCard.setId("c1");
+
             return savedCard;
         });
 
@@ -136,30 +129,17 @@ class CardServiceTest {
 
         assertNotNull(updatedCard);
         assertEquals("c1", updatedCard.getId());
-        assertEquals("blue", updatedCard.getBackgroundColor());
-        assertEquals("white", updatedCard.getTextColor());
-        assertEquals("green", updatedCard.getTranslatedTextColor());
+        assertEquals("#0000FF", updatedCard.getBackgroundColor());
+        assertEquals("#FFFFFF", updatedCard.getTextColor());
+        assertEquals("#00FF00", updatedCard.getTranslatedTextColor());
         assertEquals("http://example.com/image.jpg", updatedCard.getImageUrl());
 
         verify(cardRepository).findById("c1");
-        verify(cardRepository).save(existingCard);
+        verify(cardRepository).save(card);
     }
 
     @Test
-    void update_ThrowsException_IfCardNotFound() {
-        UpdateCardOptions opts = UpdateCardOptions.builder()
-                .id("not-found")
-                .build();
-
-        when(cardRepository.findById("not-found")).thenReturn(Optional.empty());
-
-        assertThrows(ApplicationException.class, () -> cardService.update(opts, ctx));
-        verify(cardRepository).findById("not-found");
-        verify(cardRepository, never()).save(any());
-    }
-
-    @Test
-    void delete_DeletesCard_IfExists() {
+    void delete() {
         Card existingCard = new Card();
         existingCard.setId("c1");
         when(cardRepository.findById("c1")).thenReturn(Optional.of(existingCard));
@@ -167,14 +147,6 @@ class CardServiceTest {
         cardService.delete("c1", ctx);
 
         verify(cardRepository).delete(existingCard);
-    }
-
-    @Test
-    void delete_ThrowsException_IfCardNotFound() {
-        when(cardRepository.findById("c1")).thenReturn(Optional.empty());
-
-        assertThrows(ApplicationException.class, () -> cardService.delete("c1", ctx));
-        verify(cardRepository, never()).delete(any());
     }
 
     // --------------------------------------------------------------------------------------

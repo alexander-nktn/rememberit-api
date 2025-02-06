@@ -128,20 +128,23 @@ public class CardService {
         ctx.addProperty("deleteCardId", id);
         logger.info("Deleting card with ID: {}", id);
 
-        Card card = getOneOrFail(id, ctx);
-
-        try {
-            cardRepository.delete(card);
-            logger.info("Successfully deleted card with ID: {}", id);
-        } catch (Exception ex) {
-            logger.error("Failed to delete card with ID {}: {}", id, ex.getMessage(), ex);
-            throw new ApplicationException(
-                    "Failed to delete card",
-                    ErrorCode.CARD_FAILED_TO_DELETE,
-                    ctx,
-                    ex
-            );
-        }
+        getOne(id).ifPresentOrElse(
+                card -> {
+                    try {
+                        cardRepository.delete(card);
+                        logger.info("Successfully deleted card with ID: {}", id);
+                    } catch (Exception ex) {
+                        logger.error("Failed to delete card with ID {}: {}", id, ex.getMessage(), ex);
+                        throw new ApplicationException(
+                                "Failed to delete card",
+                                ErrorCode.CARD_FAILED_TO_DELETE,
+                                ctx,
+                                ex
+                        );
+                    }
+                },
+                () -> logger.warn("Card with ID {} not found", id)
+        );
     }
 
     public List<Card> generate(GenerateCardsOptions opts, ServiceMethodContext ctx) {

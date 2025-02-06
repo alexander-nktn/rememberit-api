@@ -41,7 +41,9 @@ public class TranslationService {
     private final RestTemplate restTemplate = new RestTemplate();
 
 
-    public TranslationService(TranslationRepository translationRepository) {
+    public TranslationService(
+            TranslationRepository translationRepository
+    ) {
 //        this.translate = TranslateOptions.getDefaultInstance().getService();
         this.translationRepository = translationRepository;
     }
@@ -171,6 +173,8 @@ public class TranslationService {
 
             // Make POST request
             HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+            System.out.println("apiUrl: " + apiUrl);
             ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.POST, requestEntity, String.class);
 
             // Extract translated text from response
